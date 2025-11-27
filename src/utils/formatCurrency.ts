@@ -5,3 +5,7 @@ export const formatCurrency = (amount: number): string => {
     minimumFractionDigits: 0
   }).format(amount);
 };
+
+export const getCurrentDate = (): string => {
+  return new Date().toISOString().split('T')[0];
+};

@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Building2 } from 'lucide-react';
-import { usersData } from '@/data/koperasiData';
+import { initializeStorage, getUsers } from '@/helpers/storageKeys';
 import type { LoginPageProps } from '@/types/Types';
 
 const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
@@ -13,8 +13,13 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
 
+  useEffect(() => {
+    initializeStorage();
+  }, []);
+
   const handleLogin = (): void => {
-    const user = usersData.find(
+    const users = getUsers();
+    const user = users.find(
       u => u.username === username && u.password === password
     );
 
@@ -32,25 +37,25 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <Building2 className="w-16 h-16 text-indigo-600" />
+    <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-3 sm:p-4">
+      <Card className="w-full max-w-sm sm:max-w-md mx-auto">
+        <CardHeader className="text-center px-4 sm:px-6">
+          <div className="flex justify-center mb-3 sm:mb-4">
+            <Building2 className="w-12 h-12 sm:w-16 sm:h-16 text-indigo-600" />
           </div>
-          <CardTitle className="text-2xl">Koperasi Simpan Pinjam</CardTitle>
-          <CardDescription>Masuk ke akun Anda</CardDescription>
+          <CardTitle className="text-xl sm:text-2xl">Koperasi Simpan Pinjam</CardTitle>
+          <CardDescription className="text-xs sm:text-sm">Masuk ke akun Anda</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
+        <CardContent className="px-4 sm:px-6">
+          <div className="space-y-3 sm:space-y-4">
             {error && (
-              <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
+              <Alert variant="destructive" className="py-2 sm:py-3">
+                <AlertDescription className="text-xs sm:text-sm">{error}</AlertDescription>
               </Alert>
             )}
             
-            <div>
-              <Label htmlFor="username">Username</Label>
+            <div className="space-y-1 sm:space-y-2">
+              <Label htmlFor="username" className="text-xs sm:text-sm">Username</Label>
               <Input
                 id="username"
                 type="text"
@@ -58,11 +63,12 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 onKeyPress={handleKeyPress}
+                className="text-sm sm:text-base"
               />
             </div>
 
-            <div>
-              <Label htmlFor="password">Password</Label>
+            <div className="space-y-1 sm:space-y-2">
+              <Label htmlFor="password" className="text-xs sm:text-sm">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -70,17 +76,18 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onKeyPress={handleKeyPress}
+                className="text-sm sm:text-base"
               />
             </div>
 
-            <Button className="w-full" onClick={handleLogin}>
+            <Button className="w-full text-sm sm:text-base h-9 sm:h-10" onClick={handleLogin}>
               Masuk
             </Button>
 
-            <div className="text-sm text-gray-600 mt-4 p-3 bg-gray-50 rounded">
-              <p className="font-semibold mb-2">Demo Akun:</p>
-              <p>Admin: admin / admin123</p>
-              <p>Member: john / member123</p>
+            <div className="text-xs sm:text-sm text-gray-600 mt-3 sm:mt-4 p-2 sm:p-3 bg-gray-50 rounded">
+              <p className="font-semibold mb-1 sm:mb-2">Demo Akun:</p>
+              <p className="break-words">Admin: admin / admin123</p>
+              <p className="break-words">Member: john / member123</p>
             </div>
           </div>
         </CardContent>
