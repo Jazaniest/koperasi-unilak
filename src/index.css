@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+/* ─── Design tokens ─── */
+:root {
+  --color-primary: #1e3a5f;
+  --color-primary-light: #2e5490;
+  --color-accent: #c8a951;
+  --color-accent-light: #e2c97e;
+  --color-surface: #f8f9fb;
+  --color-surface-card: #ffffff;
+  --color-text-primary: #1a1d23;
+  --color-text-muted: #6b7280;
+  --color-success: #16a34a;
+  --color-danger: #dc2626;
+  --color-warning: #d97706;
+  --color-border: #f3f4f6;
+}
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --color-primary: var(--color-primary);
+  --color-primary-light: var(--color-primary-light);
+  --color-accent: var(--color-accent);
+  --color-accent-light: var(--color-accent-light);
+  --color-surface: var(--color-surface);
+  --color-surface-card: var(--color-surface-card);
+  --color-text-primary: var(--color-text-primary);
+  --color-text-muted: var(--color-text-muted);
+  --color-success: var(--color-success);
+  --color-danger: var(--color-danger);
+  --color-warning: var(--color-warning);
+  --color-border: var(--color-border);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-sans text-sm leading-relaxed antialiased;
+    color: var(--color-text-primary);
+    background-color: var(--color-surface);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-medium tracking-tight;
+    color: var(--color-text-primary);
+  }
+}
+
+@layer components {
+  .ds-card {
+    @apply rounded-2xl border border-gray-100 bg-surface-card p-6 shadow-sm;
+  }
+
+  .ds-section {
+    @apply px-6 py-5;
+  }
+
+  .ds-link {
+    @apply text-sm font-medium text-primary-light transition hover:text-primary;
+  }
+
+  .ds-display-value {
+    @apply text-2xl font-light tracking-tight text-text-primary;
+  }
+
+  .ds-label {
+    @apply text-sm font-medium text-text-muted;
+  }
+
+  .ds-input {
+    @apply w-full rounded-xl border border-gray-200 bg-surface-card px-4 py-2.5 text-sm text-text-primary shadow-sm transition placeholder:text-text-muted/70 focus:border-primary-light focus:outline-none focus:ring-2 focus:ring-primary/20;
+  }
+
+  .ds-avatar {
+    @apply flex shrink-0 items-center justify-center rounded-xl bg-primary text-sm font-medium text-white;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.35s ease-out;
+}
