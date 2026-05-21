@@ -1,0 +1,123 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import { DEMO_CREDENTIALS } from '../data/seed'
+import { IconLogo } from '../components/ui/Icons'
+import { Input } from '../components/ui/Input'
+import { Button } from '../components/ui/Button'
+import { Card } from '../components/ui/Card'
+
+const roleRedirect = {
+  super_admin: '/super',
+  admin: '/admin',
+  user: '/app',
+}
+
+export function LoginPage() {
+  const { login, isAuthenticated, user } = useAuth()
+  const navigate = useNavigate()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  if (isAuthenticated && user) {
+    navigate(roleRedirect[user.role], { replace: true })
+    return null
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+    const result = await login(email, password)
+    setLoading(false)
+    if (result.success) {
+      navigate(roleRedirect[result.user.role], { replace: true })
+    } else {
+      setError(result.error)
+    }
+  }
+
+  const fillDemo = (cred) => {
+    setEmail(cred.email)
+    setPassword(cred.password)
+    setError('')
+  }
+
+  return (
+    <div className="relative min-h-screen bg-primary">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -right-24 top-0 h-96 w-96 rounded-2xl bg-accent/10 blur-3xl" />
+        <div className="absolute bottom-0 left-0 h-64 w-64 rounded-2xl bg-primary-light/30 blur-3xl" />
+      </div>
+
+      <div className="relative flex min-h-screen flex-col items-center justify-center px-6 py-10 sm:px-8">
+        <div className="mb-10 text-center">
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-accent/30 bg-surface-card/10 backdrop-blur-sm">
+            <IconLogo className="h-9 w-9" />
+          </div>
+          <h1 className="text-2xl font-medium text-white sm:text-3xl">KoperasiUnilak</h1>
+          <p className="mt-2 max-w-sm text-sm leading-relaxed text-white/70">
+            Platform manajemen simpanan dan pinjaman anggota koperasi
+          </p>
+        </div>
+
+        <Card className="w-full max-w-md border-gray-100 shadow-sm">
+          <h2 className="text-lg font-medium text-text-primary">Masuk ke akun Anda</h2>
+          <p className="mt-1 text-sm leading-relaxed text-text-muted">
+            Gunakan akun demo di bawah untuk mencoba sistem
+          </p>
+
+          <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+            <Input
+              label="Email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="nama@email.com"
+              required
+              autoComplete="email"
+            />
+            <Input
+              label="Kata sandi"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+              autoComplete="current-password"
+            />
+            {error && (
+              <p className="rounded-xl border border-danger/20 bg-danger/5 px-4 py-2.5 text-sm text-danger">
+                {error}
+              </p>
+            )}
+            <Button type="submit" className="w-full" size="lg" loading={loading}>
+              Masuk
+            </Button>
+          </form>
+
+          <div className="mt-8 border-t border-gray-100 pt-6">
+            <p className="mb-4 text-xs font-medium uppercase tracking-wider text-text-muted">
+              Akun demo
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {DEMO_CREDENTIALS.map((cred) => (
+                <button
+                  key={cred.email}
+                  type="button"
+                  onClick={() => fillDemo(cred)}
+                  className="rounded-xl border border-gray-100 bg-surface px-4 py-3 text-left text-sm transition hover:border-primary/20 hover:bg-primary/5"
+                >
+                  <span className="font-medium text-text-primary">{cred.label}</span>
+                  <span className="mt-0.5 block truncate text-xs text-text-muted">{cred.email}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </Card>
+      </div>
+    </div>
+  )
+}
