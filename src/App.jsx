@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { useAuth } from './context/AuthContext'
+// import { useAuth } from './context/AuthContext'
 import { ProtectedRoute } from './components/layout/ProtectedRoute'
 import { LoginPage } from './pages/LoginPage'
 import { UserDashboard } from './pages/user/UserDashboard'
@@ -12,19 +12,24 @@ import { AdminMemberDetailPage } from './pages/admin/AdminMemberDetailPage'
 import { AdminApplicationsPage } from './pages/admin/AdminApplicationsPage'
 import { SuperDashboard } from './pages/super/SuperDashboard'
 import { SuperDatabasePage } from './pages/super/SuperDatabasePage'
+import { LandingPage } from './pages/LandingPage'
+import { StrukturPengurusPage } from './pages/StrukturPengurusPage'
+import { VisiMisiPage } from './pages/VisiMisiPage'
 
-function HomeRedirect() {
-  const { user, isAuthenticated } = useAuth()
-  if (!isAuthenticated) return <Navigate to="/login" replace />
-  if (user.role === 'super_admin') return <Navigate to="/super" replace />
-  if (user.role === 'admin') return <Navigate to="/admin" replace />
-  return <Navigate to="/app" replace />
-}
+// function HomeRedirect() {
+//   const { user, isAuthenticated } = useAuth()
+//   if (!isAuthenticated) return <Navigate to="/login" replace />
+//   if (user.role === 'super_admin') return <Navigate to="/super" replace />
+//   if (user.role === 'admin') return <Navigate to="/admin" replace />
+//   return <Navigate to="/app" replace />
+// }
 
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<HomeRedirect />} />
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/visi-misi" element={<VisiMisiPage />} />
+      <Route path="/struktur-pengurus" element={<StrukturPengurusPage />} />
       <Route path="/login" element={<LoginPage />} />
 
       <Route
