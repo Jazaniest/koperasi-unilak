@@ -12,16 +12,24 @@ export function AuthProvider({ children }) {
   }, [])
 
   useEffect(() => {
+    //eslint-disable-next-line
     refresh()
   }, [refresh])
 
   const login = async (email, password) => {
     setLoading(true)
-    const result = authService.login(email, password)
+
+    const result = await authService.login(
+      email,
+      password
+    )
+
     setLoading(false)
+
     if (result.success) {
       setUser(result.user)
     }
+
     return result
   }
 
@@ -36,7 +44,7 @@ export function AuthProvider({ children }) {
     </AuthContext.Provider>
   )
 }
-
+//eslint-disable-next-line
 export function useAuth() {
   const ctx = useContext(AuthContext)
   if (!ctx) throw new Error('useAuth harus dipakai di dalam AuthProvider')
