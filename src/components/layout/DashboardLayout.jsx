@@ -39,7 +39,7 @@ export function DashboardLayout({ title, subtitle, navItems, children }) {
         <div className="flex h-16 items-center gap-3 border-b border-gray-100 px-6">
           <IconLogo />
           <div>
-            <p className="text-sm font-medium text-text-primary">KoperasiUnilak</p>
+            <p className="text-sm font-medium text-text-primary">Koperasi Unilak</p>
             <p className="text-xs text-text-muted">Sistem Manajemen</p>
           </div>
           <button
@@ -60,10 +60,9 @@ export function DashboardLayout({ title, subtitle, navItems, children }) {
               end={item.end}
               onClick={() => setSidebarOpen(false)}
               className={({ isActive }) =>
-                `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
-                  isActive
-                    ? 'bg-primary/8 text-primary'
-                    : 'text-text-muted hover:bg-gray-50 hover:text-text-primary'
+                `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${isActive
+                  ? 'bg-primary/8 text-primary'
+                  : 'text-text-muted hover:bg-gray-50 hover:text-text-primary'
                 }`
               }
             >

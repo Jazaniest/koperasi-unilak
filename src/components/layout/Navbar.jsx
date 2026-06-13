@@ -7,6 +7,7 @@ const navLinks = [
     { to: '/', label: 'Beranda', end: true },
     { to: '/visi-misi', label: 'Visi & Misi' },
     { to: '/struktur-pengurus', label: 'Struktur Pengurus' },
+    { to: '/simulasi-pinjaman', label: 'Simulasi Pinjaman' },
 ]
 
 export function Navbar() {
@@ -18,7 +19,7 @@ export function Navbar() {
                 <Link to="/" className="flex items-center gap-3 shrink-0">
                     <IconLogo />
                     <div>
-                        <p className="text-sm font-medium text-text-primary leading-tight">KoperasiUnilak</p>
+                        <p className="text-sm font-medium text-text-primary leading-tight">Koperasi Unilak</p>
                         <p className="text-xs text-text-muted leading-tight">Sistem Manajemen</p>
                     </div>
                 </Link>

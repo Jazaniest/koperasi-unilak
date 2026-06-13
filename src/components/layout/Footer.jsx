@@ -12,7 +12,7 @@ export function Footer() {
                         <div className="flex items-center gap-3">
                             <IconLogo />
                             <div>
-                                <p className="text-sm font-medium text-text-primary">KoperasiUnilak</p>
+                                <p className="text-sm font-medium text-text-primary">Koperasi Unilak</p>
                                 <p className="text-xs text-text-muted">Sistem Manajemen</p>
                             </div>
                         </div>
@@ -54,7 +54,7 @@ export function Footer() {
                 </div>
 
                 <div className="mt-10 border-t border-gray-100 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-text-muted">
-                    <p>© {year} KoperasiUnilak. Seluruh hak cipta dilindungi.</p>
+                    <p>© {year} Koperasi Unilak. Seluruh hak cipta dilindungi.</p>
                     <p>Universitas Lancang Kuning</p>
                 </div>
             </div>
