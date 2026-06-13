@@ -31,6 +31,7 @@ export const ROLE_LABELS = {
   super_admin: 'Super Admin',
   admin: 'Admin',
   user: 'Anggota',
+  bendahara: 'Bendahara',
 }
 
 export const STATUS_COLORS = {
