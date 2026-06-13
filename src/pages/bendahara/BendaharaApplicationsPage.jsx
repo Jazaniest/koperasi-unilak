@@ -68,7 +68,7 @@ export function BendaharaApplicationsPage() {
     const openConfirmation = (decision) => {
         if (!selected) return
         const isApprove = decision === 'approved'
-        
+
         setModalConfig({
             open: true,
             title: isApprove ? 'Setujui Pengajuan' : 'Tolak Pengajuan',
@@ -87,7 +87,7 @@ export function BendaharaApplicationsPage() {
 
         try {
             const defaultNote = modalConfig.decision === 'approved' ? 'Disetujui' : 'Ditolak'
-            
+
             // Ditambahkan await karena fungsi ini melakukan hit ke API / Database
             const result = await reviewLoanApplication(
                 selected.id,
@@ -196,47 +196,60 @@ export function BendaharaApplicationsPage() {
                             </div>
                             <div>
                                 <dt className="text-text-muted">Jaminan</dt>
-                                <dd className="leading-relaxed text-text-primary">{selected.collateral}</dd>
-                            </div>
-                        </dl>
+                                <dd className="leading-relaxed text-text-primary">
+                                    {selected.collateral ? (
+                                        <a
+                                            href={ `${import.meta.env.VITE_API_URL}/uploads/collateral/${selected.collateral}` }
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="ds-link"
+                                        >
+                                    Lihat Dokumen →
+                                </a>
+                                ) : (
+                                <span className="text-text-muted">Tidak ada jaminan</span>
+                                )}
+                            </dd>
+                        </div>
+                    </dl>
 
                         {selected.status === 'pending' && (
-                            <div className="mt-6 space-y-4">
-                                <Textarea
-                                    label="Catatan"
-                                    value={notes}
-                                    onChange={(e) => setNotes(e.target.value)}
-                                    placeholder="Alasan persetujuan atau penolakan..."
-                                />
-                                <div className="flex gap-3">
-                                    <Button className="flex-1" onClick={() => openConfirmation('approved')}>
-                                        Setujui
-                                    </Button>
-                                    <Button variant="danger" className="flex-1" onClick={() => openConfirmation('rejected')}>
-                                        Tolak
-                                    </Button>
-                                </div>
-                            </div>
-                        )}
-
-                        {selected.adminNotes && (
-                            <p className="mt-5 rounded-xl border border-gray-100 bg-surface p-4 text-sm leading-relaxed text-text-muted">
-                                <span className="font-medium text-text-primary">Catatan:</span> {selected.adminNotes}
-                            </p>
-                        )}
-                    </Card>
+                    <div className="mt-6 space-y-4">
+                        <Textarea
+                            label="Catatan"
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                            placeholder="Alasan persetujuan atau penolakan..."
+                        />
+                        <div className="flex gap-3">
+                            <Button className="flex-1" onClick={() => openConfirmation('approved')}>
+                                Setujui
+                            </Button>
+                            <Button variant="danger" className="flex-1" onClick={() => openConfirmation('rejected')}>
+                                Tolak
+                            </Button>
+                        </div>
+                    </div>
                 )}
-            </div>
 
-            {/* Injeksi Komponen Modal Konfirmasi ke dalam DOM render */}
-            <ModalKonfirmasi
-                open={modalConfig.open}
-                title={modalConfig.title}
-                description={modalConfig.description}
-                loading={modalConfig.loading}
-                onConfirm={handleReview}
-                onCancel={() => setModalConfig((prev) => ({ ...prev, open: false }))}
-            />
-        </DashboardLayout>
+                {selected.adminNotes && (
+                    <p className="mt-5 rounded-xl border border-gray-100 bg-surface p-4 text-sm leading-relaxed text-text-muted">
+                        <span className="font-medium text-text-primary">Catatan:</span> {selected.adminNotes}
+                    </p>
+                )}
+            </Card>
+                )}
+        </div>
+
+            {/* Injeksi Komponen Modal Konfirmasi ke dalam DOM render */ }
+    <ModalKonfirmasi
+        open={modalConfig.open}
+        title={modalConfig.title}
+        description={modalConfig.description}
+        loading={modalConfig.loading}
+        onConfirm={handleReview}
+        onCancel={() => setModalConfig((prev) => ({ ...prev, open: false }))}
+    />
+        </DashboardLayout >
     )
 }
