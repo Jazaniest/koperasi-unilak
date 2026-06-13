@@ -1,5 +1,4 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-// import { useAuth } from './context/AuthContext'
 import { ProtectedRoute } from './components/layout/ProtectedRoute'
 import { LoginPage } from './pages/LoginPage'
 import { UserDashboard } from './pages/user/UserDashboard'
@@ -9,20 +8,18 @@ import { UserLoanApplicationPage } from './pages/user/UserLoanApplicationPage'
 import { AdminDashboard } from './pages/admin/AdminDashboard'
 import { AdminMembersPage } from './pages/admin/AdminMembersPage'
 import { AdminMemberDetailPage } from './pages/admin/AdminMemberDetailPage'
-import { AdminApplicationsPage } from './pages/admin/AdminApplicationsPage'
+// ── BARU: Bendahara ───────────────────────────────────────────────────────────
+import { BendaharaDashboard } from './pages/bendahara/BendaharaDashboard'
+import { BendaharaApplicationsPage } from './pages/bendahara/BendaharaApplicationsPage'
+import { BendaharaMembersPage } from './pages/bendahara/BendaharaMembersPage'
+import { BendaharaMemberDetailPage } from './pages/bendahara/BendaharaMemberDetailPage'
+// ─────────────────────────────────────────────────────────────────────────────
 import { SuperDashboard } from './pages/super/SuperDashboard'
 import { SuperDatabasePage } from './pages/super/SuperDatabasePage'
 import { LandingPage } from './pages/LandingPage'
 import { StrukturPengurusPage } from './pages/StrukturPengurusPage'
 import { VisiMisiPage } from './pages/VisiMisiPage'
-
-// function HomeRedirect() {
-//   const { user, isAuthenticated } = useAuth()
-//   if (!isAuthenticated) return <Navigate to="/login" replace />
-//   if (user.role === 'super_admin') return <Navigate to="/super" replace />
-//   if (user.role === 'admin') return <Navigate to="/admin" replace />
-//   return <Navigate to="/app" replace />
-// }
+import { SimulasiPinjamanPage } from './pages/SimulasiPinjamanPage'
 
 export default function App() {
   return (
@@ -30,8 +27,10 @@ export default function App() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/visi-misi" element={<VisiMisiPage />} />
       <Route path="/struktur-pengurus" element={<StrukturPengurusPage />} />
+      <Route path="/simulasi-pinjaman" element={<SimulasiPinjamanPage />} />
       <Route path="/login" element={<LoginPage />} />
 
+      {/* ── User ── */}
       <Route
         path="/app"
         element={
@@ -65,6 +64,7 @@ export default function App() {
         }
       />
 
+      {/* ── Admin ── */}
       <Route
         path="/admin"
         element={
@@ -89,15 +89,47 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+
+      {/* ── Bendahara (BARU) ── */}
       <Route
-        path="/admin/pengajuan"
+        path="/bendahara"
         element={
-          <ProtectedRoute roles={['admin']}>
-            <AdminApplicationsPage />
+          <ProtectedRoute roles={['bendahara']}>
+            <BendaharaDashboard />
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/bendahara/pengajuan"
+        element={
+          <ProtectedRoute roles={['bendahara']}>
+            <BendaharaApplicationsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/bendahara/anggota"
+        element={
+          <ProtectedRoute roles={['bendahara']}>
+            <BendaharaMembersPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/bendahara/anggota/:id"
+        element={
+          <ProtectedRoute roles={['bendahara']}>
+            <BendaharaMemberDetailPage />
+          </ProtectedRoute>
+        }
+      />
+      {/* Route halaman berikutnya akan ditambahkan di sini:
+      <Route path="/bendahara/simpanan"   element={...} />
+      <Route path="/bendahara/pinjaman"   element={...} />
+      <Route path="/bendahara/laporan"    element={...} />
+      */}
 
+      {/* ── Super Admin ── */}
       <Route
         path="/super"
         element={
