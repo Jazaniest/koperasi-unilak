@@ -70,3 +70,35 @@ export async function setMemberStatus(memberId, status) {
     return { success: false, error: err.message }
   }
 }
+
+/** Anggota ajukan pengunduran diri */
+export async function submitResignation(reason) {
+  try {
+    await apiRequest('/members/me/resignation', {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
+    })
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+}
+
+/** Bendahara: ambil daftar pengunduran diri pending */
+export async function getPendingResignations() {
+  const res = await apiRequest('/members/resignations/pending')
+  return res.data
+}
+
+/** Bendahara: setujui atau tolak pengunduran diri */
+export async function reviewResignation(memberId, decision, notes) {
+  try {
+    await apiRequest(`/members/${memberId}/resignation/review`, {
+      method: 'POST',
+      body: JSON.stringify({ decision, notes }),
+    })
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+}
