@@ -1,3 +1,4 @@
+//seed.js
 export const DEMO_CREDENTIALS = [
   { email: 'superadmin@koperasi.dev', password: 'super123', label: 'Super Admin' },
   { email: 'admin@koperasi.dev', password: 'admin123', label: 'Admin' },
@@ -79,6 +80,7 @@ export function createSeedDatabase() {
         id: 'm-001',
         userId: 'u-budi',
         memberNumber: 'KTA-2024-001',
+        birthPlaceAndDate: '1990-05-15',
         nik: '3201010101010001',
         address: 'Jl. Melati No. 12, Jakarta Selatan',
         joinDate: '2024-03-10',
@@ -90,6 +92,7 @@ export function createSeedDatabase() {
         id: 'm-002',
         userId: 'u-siti',
         memberNumber: 'KTA-2024-002',
+        birthPlaceAndDate: '1985-08-20',
         nik: '3201010202020002',
         address: 'Jl. Kenanga No. 5, Depok',
         joinDate: '2024-04-20',
@@ -101,6 +104,7 @@ export function createSeedDatabase() {
         id: 'm-003',
         userId: 'u-agus',
         memberNumber: 'KTA-2024-003',
+        birthPlaceAndDate: '1988-12-10',
         nik: '3201010303030003',
         address: 'Jl. Mawar No. 8, Tangerang',
         joinDate: '2024-06-01',
