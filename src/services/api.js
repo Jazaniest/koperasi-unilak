@@ -1,18 +1,48 @@
-import { getConfig } from '../lib/storage'
+// src/services/api.js
 
-/** Wrapper siap backend — saat ini masih mock via service lokal */
+const BASE_URL = import.meta.env.VITE_API_URL
+
+function getToken() {
+  try {
+    const raw = localStorage.getItem('koperasi_session')
+    if (!raw) return null
+    return JSON.parse(raw)?.token ?? null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Wrapper fetch ke backend.
+ * Otomatis inject Authorization header jika ada token.
+ * Melempar Error jika response tidak ok.
+ */
 export async function apiRequest(path, options = {}) {
-  const config = getConfig()
-  const url = `${config.apiBaseUrl}${path}`
+  const token = getToken()
 
-  if (import.meta.env.DEV) {
-    console.debug('[API mock]', options.method || 'GET', url)
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...options.headers,
   }
 
-  // Nanti: return fetch(url, { ...options, headers: { 'Content-Type': 'application/json', ... } })
-  throw new Error('Backend belum terhubung. Gunakan service lokal.')
+  const res = await fetch(`${BASE_URL}${path}`, {
+    ...options,
+    headers,
+  })
+
+  const data = await res.json()
+
+  if (!res.ok) {
+    const err = new Error(data.message || 'Request gagal')
+    err.status = res.status
+    err.data = data
+    throw err
+  }
+
+  return data // { success: true, data: ..., message: ... }
 }
 
 export function getApiBaseUrl() {
-  return getConfig().apiBaseUrl
+  return BASE_URL
 }

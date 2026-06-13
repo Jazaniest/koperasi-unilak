@@ -1,56 +1,69 @@
-import { getDatabase, updateDatabase, addSystemLog } from './dbService'
+// src/services/authService.js
+
+import { apiRequest } from './api'
 import { getSession, setSession } from '../lib/storage'
 
-export function login(email, password) {
-  const db = getDatabase()
-  const user = db.users.find(
-    (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password,
-  )
-
-  if (!user) {
-    return { success: false, error: 'Email atau kata sandi salah' }
+/**
+ * POST /api/auth/login
+ * Response: { data: { token, user } }
+ */
+export async function login(email, password) {
+  try {
+    const res = await apiRequest('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    })
+    // Simpan token + user ke session storage
+    setSession({ token: res.data.token, user: res.data.user })
+    return { success: true, user: res.data.user }
+  } catch (err) {
+    return { success: false, error: err.message }
   }
-
-  const { password: _, ...safeUser } = user
-  const session = {
-    user: safeUser,
-    token: `mock-token-${user.id}-${Date.now()}`,
-    loginAt: new Date().toISOString(),
-  }
-
-  setSession(session)
-  addSystemLog('info', `Login: ${user.email} (${user.role})`)
-
-  return { success: true, user: safeUser }
 }
 
-export function logout() {
-  const session = getSession()
-  if (session?.user) {
-    addSystemLog('info', `Logout: ${session.user.email}`)
+/**
+ * POST /api/auth/logout
+ * Backend stateless — cukup hapus session lokal
+ */
+export async function logout() {
+  try {
+    await apiRequest('/auth/logout', { method: 'POST' })
+  } catch {
+    // Tetap hapus session meski request gagal
+  } finally {
+    setSession(null)
   }
-  setSession(null)
+}
+
+/**
+ * GET /api/auth/me
+ * Ambil data user aktif dari server (validasi token)
+ */
+export async function fetchCurrentUser() {
+  const res = await apiRequest('/auth/me')
+  return res.data // { id, email, role, name }
 }
 
 export function getCurrentUser() {
-  const session = getSession()
-  return session?.user ?? null
+  return getSession()?.user ?? null
 }
 
 export function isAuthenticated() {
-  return !!getCurrentUser()
+  return !!getSession()?.token
 }
 
-export function changePassword(userId, oldPassword, newPassword) {
-  const db = getDatabase()
-  const user = db.users.find((u) => u.id === userId)
-  if (!user || user.password !== oldPassword) {
-    return { success: false, error: 'Kata sandi lama tidak sesuai' }
+/**
+ * POST /api/auth/change-password
+ * Body: { oldPassword, newPassword }
+ */
+export async function changePassword(userId, oldPassword, newPassword) {
+  try {
+    await apiRequest('/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify({ oldPassword, newPassword }),
+    })
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
   }
-  updateDatabase((d) => {
-    const u = d.users.find((x) => x.id === userId)
-    if (u) u.password = newPassword
-    return d
-  })
-  return { success: true }
 }

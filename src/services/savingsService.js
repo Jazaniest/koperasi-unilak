@@ -1,25 +1,43 @@
-import { getDatabase } from './dbService'
+// src/services/savingService.js
 
-export function getMemberSavings(memberId) {
-  const db = getDatabase()
-  const records = db.savings
-    .filter((s) => s.memberId === memberId)
-    .sort((a, b) => new Date(b.date) - new Date(a.date))
-
-  const byType = { pokok: 0, wajib: 0, sukarela: 0 }
-  for (const r of records) {
-    if (byType[r.type] !== undefined) byType[r.type] += r.amount
-  }
-
-  return {
-    records,
-    byType,
-    total: Object.values(byType).reduce((a, b) => a + b, 0),
-  }
-}
+import { apiRequest } from './api'
 
 export const SAVINGS_TYPE_LABELS = {
   pokok: 'Simpanan Pokok',
   wajib: 'Simpanan Wajib',
   sukarela: 'Simpanan Sukarela',
+}
+
+/**
+ * GET /api/savings/member/:memberId
+ * Response: { records, byType, total }
+ */
+export async function getMemberSavings(memberId) {
+  const res = await apiRequest(`/savings/member/${memberId}`)
+  return res.data
+}
+
+/**
+ * GET /api/savings
+ * Semua transaksi — staff only
+ */
+export async function getAllSavingsTransactions() {
+  const res = await apiRequest('/savings')
+  return res.data
+}
+
+/**
+ * POST /api/savings
+ * Body: { memberId, type, amount, description }
+ */
+export async function addSavingsTransaction({ memberId, type, amount, description }) {
+  try {
+    const res = await apiRequest('/savings', {
+      method: 'POST',
+      body: JSON.stringify({ memberId, type, amount, description }),
+    })
+    return { success: true, saving: res.data }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
 }

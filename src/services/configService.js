@@ -1,27 +1,27 @@
-import { getConfig, setConfig } from '../lib/storage'
-import { addSystemLog } from './dbService'
+// src/services/configService.js
 
-export function getServerConfig() {
-  return getConfig()
+import { apiRequest } from './api'
+
+/**
+ * GET /api/system/metrics
+ */
+export async function getServerConfig() {
+  // Config server sekarang dari backend, bukan localStorage
+  const res = await apiRequest('/system/metrics')
+  return res.data
 }
 
-export function updateServerConfig(updates) {
-  const current = getConfig()
-  const next = { ...current, ...updates }
-  setConfig(next)
-  addSystemLog('info', `Konfigurasi server diperbarui: ${Object.keys(updates).join(', ')}`)
-  return next
+export async function getMockServerMetrics() {
+  const res = await apiRequest('/system/metrics')
+  return res.data
 }
 
-export function getMockServerMetrics() {
-  const config = getConfig()
-  return {
-    status: config.maintenanceMode ? 'maintenance' : config.serverStatus,
-    uptime: '99.97%',
-    cpu: Math.floor(18 + Math.random() * 25),
-    memory: Math.floor(42 + Math.random() * 20),
-    requestsPerMin: Math.floor(120 + Math.random() * 80),
-    dbConnections: Math.floor(4 + Math.random() * 8),
-    lastChecked: new Date().toISOString(),
-  }
+/**
+ * Tidak ada endpoint PUT config di backend.
+ * Fungsi ini dipertahankan agar tidak ada error di pemanggil,
+ * tapi tidak melakukan apa-apa sampai endpoint tersedia.
+ */
+export async function updateServerConfig(updates) {
+  console.warn('[configService] updateServerConfig: endpoint belum tersedia di backend', updates)
+  return updates
 }
