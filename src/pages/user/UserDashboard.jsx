@@ -4,7 +4,6 @@ import { useAuth } from '../../context/AuthContext'
 import { DashboardLayout } from '../../components/layout/DashboardLayout'
 import { StatCard, Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
-import { Button } from '../../components/ui/Button'
 import { IconWallet, IconLoan, IconFile } from '../../components/ui/Icons'
 import { getMemberByUserId } from '../../services/memberService'
 import { getMemberSavings } from '../../services/savingsService'
@@ -12,6 +11,8 @@ import { getMemberLoans } from '../../services/loanService'
 import { getLoanApplications } from '../../services/loanApplicationService'
 import { formatCurrency, formatDate } from '../../utils/format'
 import { UserNavbar } from '../../components/user/UserNavbar'
+import { submitResignation } from '../../services/memberService'
+import { ModalPengunduranDiri } from '../../components/user/ModalPengunduranDiri'
 
 export function UserDashboard() {
   const { user } = useAuth()
@@ -19,6 +20,10 @@ export function UserDashboard() {
   const [savings, setSavings] = useState(null)
   const [loans, setLoans] = useState([])
   const [applications, setApplications] = useState([])
+  const [showResignModal, setShowResignModal] = useState(false)
+  const [resignLoading, setResignLoading] = useState(false)
+  const [resignError, setResignError] = useState(null)
+  const [resignSuccess, setResignSuccess] = useState(false)
 
   useEffect(() => {
     getMemberByUserId(user.id).then(async (m) => {
@@ -39,6 +44,25 @@ export function UserDashboard() {
   const activeLoans = loans.filter((l) => l.status === 'active')
   const totalRemaining = activeLoans.reduce((s, l) => s + l.remaining, 0)
   const pendingApp = applications.find((a) => a.status === 'pending')
+
+  const hasActiveLoans = activeLoans.length > 0
+  const isPendingResignation = member?.resignationStatus === 'pending'
+  const isApprovedResignation = member?.resignationStatus === 'approved'
+
+  async function handleResignSubmit(reason) {
+    setResignLoading(true)
+    setResignError(null)
+    const result = await submitResignation(reason)
+    setResignLoading(false)
+    if (result.success) {
+      setShowResignModal(false)
+      setResignSuccess(true)
+      // refresh data member
+      getMemberByUserId(user.id).then(setMember)
+    } else {
+      setResignError(result.error)
+    }
+  }
 
   return (
     <DashboardLayout
@@ -114,22 +138,6 @@ export function UserDashboard() {
         </Card>
       </div>
 
-      <Card className="mt-6 border-primary/15 bg-primary text-white">
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h3 className="text-lg font-medium">Butuh dana tambahan?</h3>
-            <p className="mt-2 text-sm leading-relaxed text-white/75">
-              Ajukan pinjaman online — admin akan meninjau pengajuan Anda
-            </p>
-          </div>
-          <Link to="/app/pengajuan">
-            <Button variant="accent" className="whitespace-nowrap">
-              Ajukan Sekarang
-            </Button>
-          </Link>
-        </div>
-      </Card>
-
       {applications.length > 0 && (
         <Card className="mt-6">
           <h3 className="font-medium text-text-primary">Riwayat Pengajuan Terbaru</h3>
@@ -148,6 +156,51 @@ export function UserDashboard() {
           </ul>
         </Card>
       )}
+
+      {/* ── Pengunduran Diri ──────────────────────────────────────────────────── */}
+      <Card className="mt-6 border border-danger/20">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h3 className="font-medium text-text-primary">Pengunduran Diri</h3>
+            <p className="mt-1 text-sm text-text-muted leading-relaxed">
+              {isPendingResignation
+                ? 'Pengajuan pengunduran diri Anda sedang ditinjau oleh bendahara.'
+                : isApprovedResignation
+                  ? 'Pengunduran diri Anda telah disetujui.'
+                  : 'Ajukan pengunduran diri dari keanggotaan koperasi.'}
+            </p>
+            {resignError && (
+              <p className="mt-2 text-sm text-danger">{resignError}</p>
+            )}
+            {resignSuccess && (
+              <p className="mt-2 text-sm text-success">
+                Pengajuan berhasil dikirim. Menunggu persetujuan bendahara.
+              </p>
+            )}
+          </div>
+          {!isPendingResignation && !isApprovedResignation && (
+            <button
+              onClick={() => { setResignError(null); setShowResignModal(true) }}
+              className="shrink-0 rounded-xl border border-danger/30 bg-danger/8 px-4 py-2 text-sm font-medium text-danger transition hover:bg-danger/15"
+            >
+              Ajukan
+            </button>
+          )}
+          {isPendingResignation && (
+            <span className="shrink-0 rounded-xl border border-warning/30 bg-warning/8 px-3 py-1.5 text-xs font-medium text-warning">
+              Menunggu Tinjauan
+            </span>
+          )}
+        </div>
+      </Card>
+
+      <ModalPengunduranDiri
+        open={showResignModal}
+        onClose={() => setShowResignModal(false)}
+        onSubmit={handleResignSubmit}
+        loading={resignLoading}
+        hasActiveLoans={hasActiveLoans}
+      />
     </DashboardLayout>
   )
 }

@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { DashboardLayout } from '../../components/layout/DashboardLayout'
 import { Card } from '../../components/ui/Card'
-import { Input, Textarea, Select } from '../../components/ui/Input'
+import { Input, Textarea } from '../../components/ui/Input'
 import { Button } from '../../components/ui/Button'
 import { Badge } from '../../components/ui/Badge'
 import { getMemberByUserId } from '../../services/memberService'
@@ -16,7 +16,7 @@ export function UserLoanApplicationPage() {
   const [form, setForm] = useState({
     amount: '',
     purpose: '',
-    tenorMonths: '12',
+    tenorMonths: '12', // default awal 12 bulan
     collateral: '',
   })
   const [error, setError] = useState('')
@@ -25,6 +25,7 @@ export function UserLoanApplicationPage() {
   const [refreshKey, setRefreshKey] = useState(0)
 
   const [applications, setApplications] = useState([])
+  const fileInputRef = useRef(null)
 
   useEffect(() => {
     getMemberByUserId(user.id).then(setMember)
@@ -34,25 +35,68 @@ export function UserLoanApplicationPage() {
     if (member) getLoanApplications({ memberId: member.id }).then(setApplications)
   }, [member, refreshKey])
 
+  // Fungsi pembantu untuk membuat format titik (ribuan) saat mengetik
+  const formatNumberWithDots = (value) => {
+    if (!value) return ''
+    // Hapus semua karakter non-angka
+    const cleanNumber = value.replace(/\D/g, '')
+    // Tambahkan titik setiap kelipatan 3 angka dari belakang
+    return cleanNumber.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+  }
+
+  const handleAmountChange = (e) => {
+    const formattedValue = formatNumberWithDots(e.target.value)
+    setForm({ ...form, amount: formattedValue })
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     setSuccess('')
+
     if (!member) {
       setError('Profil anggota tidak ditemukan')
       return
     }
-    setLoading(true)
+
+    // Bersihkan titik dari string nominal untuk mendapatkan angka murni
+    const rawAmount = Number(form.amount.replace(/\./g, ''))
+    const tenor = Number(form.tenorMonths)
+
+    // Validasi minimal nominal pinjaman
+    if (rawAmount < 2500000) {
+      setError('Minimal nominal pengajuan pinjaman adalah Rp 2.500.000')
+      return
+    }
+
+    if (rawAmount > 50000000) {
+      setError('Maksimal nominal pengajuan pinjaman adalah Rp 50.000.000')
+      return
+    }
+
+    // Validasi minimal tenor bulan
+    if (tenor < 12) {
+      setError('Jangka waktu pinjaman minimal adalah 12 bulan')
+      return
+    }
+
+    if (tenor > 60) {
+      setError('Jangka waktu pinjaman maksimal adalah 60 bulan')
+      return
+    }
+
     const result = await submitLoanApplication(member.id, {
-      amount: Number(form.amount),
+      amount: rawAmount,
       purpose: form.purpose,
-      tenorMonths: Number(form.tenorMonths),
-      collateral: form.collateral?.name || '',   // ← kirim nama file, bukan File object
+      tenorMonths: tenor,
+      collateral: form.collateral,
     })
     setLoading(false)
+
     if (result.success) {
       setSuccess('Pengajuan berhasil dikirim. Admin akan meninjau segera.')
       setForm({ amount: '', purpose: '', tenorMonths: '12', collateral: '' })
+      if (fileInputRef.current) fileInputRef.current.value = ''  // ← reset input file
       setRefreshKey((k) => k + 1)
     } else {
       setError(result.error)
@@ -71,12 +115,10 @@ export function UserLoanApplicationPage() {
           <form onSubmit={handleSubmit} className="mt-5 space-y-5">
             <Input
               label="Jumlah pinjaman (Rp)"
-              type="number"
-              min="500000"
-              step="100000"
+              type="text" // Diubah ke text agar bisa menampilkan format titik
               value={form.amount}
-              onChange={(e) => setForm({ ...form, amount: e.target.value })}
-              placeholder="5000000"
+              onChange={handleAmountChange}
+              placeholder="2.500.000"
               required
             />
             <Textarea
@@ -86,24 +128,19 @@ export function UserLoanApplicationPage() {
               placeholder="Jelaskan keperluan dana..."
               required
             />
-            <Select
-              label="Jangka waktu"
+            <Input
+              label="Jangka waktu (Bulan)"
+              type="number" // Diubah ke number kustom agar bisa diisi bebas oleh user
               value={form.tenorMonths}
               onChange={(e) => setForm({ ...form, tenorMonths: e.target.value })}
-              options={[
-                { value: '6', label: '6 bulan' },
-                { value: '12', label: '12 bulan' },
-                { value: '18', label: '18 bulan' },
-                { value: '24', label: '24 bulan' },
-                { value: '36', label: '36 bulan' },
-              ]}
+              placeholder="Minimal 12"
+              required
             />
             <Input
               label="Jaminan / agunan (Upload Dokumen) *opsional"
               type="file"
-              // value sengaja dihilangkan untuk input file
+              ref={fileInputRef}
               onChange={(e) => setForm({ ...form, collateral: e.target.files[0] })}
-              placeholder="Pilih file BPKB atau sertifikat"
             />
             {error && (
               <p className="rounded-xl border border-danger/20 bg-danger/5 px-4 py-2.5 text-sm text-danger">
@@ -134,6 +171,7 @@ export function UserLoanApplicationPage() {
                     <Badge status={app.status} />
                   </div>
                   <p className="mt-1 text-sm text-text-muted">{app.purpose}</p>
+                  <p className="mt-1 text-xs text-text-muted font-medium">Tenor: {app.tenorMonths} Bulan</p>
                   <p className="mt-2 text-xs text-text-muted">{formatDateTime(app.createdAt)}</p>
                   {app.adminNotes && (
                     <p className="mt-3 rounded-lg border border-gray-100 bg-surface-card p-3 text-xs leading-relaxed text-text-muted">
