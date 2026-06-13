@@ -49,7 +49,7 @@ export function VisiMisiPage() {
                         Visi &amp; Misi
                     </h1>
                     <p className="mt-3 max-w-xl text-base leading-relaxed text-text-muted">
-                        Landasan arah dan tujuan KoperasiUnilak dalam melayani sivitas akademika
+                        Landasan arah dan tujuan Koperasi Unilak dalam melayani sivitas akademika
                         Universitas Lancang Kuning.
                     </p>
                 </div>

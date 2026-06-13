@@ -164,7 +164,7 @@ export function StrukturPengurusPage() {
                         Struktur Pengurus
                     </h1>
                     <p className="mt-3 max-w-xl text-base leading-relaxed text-text-muted">
-                        Susunan pengurus, pengawas, dan pengelola KoperasiUnilak periode 2023 – 2026.
+                        Susunan pengurus, pengawas, dan pengelola Koperasi Unilak periode 2023 – 2026.
                     </p>
                 </div>
             </section>

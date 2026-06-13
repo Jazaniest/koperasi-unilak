@@ -10,6 +10,7 @@ import { Card } from '../components/ui/Card'
 const roleRedirect = {
   super_admin: '/super',
   admin: '/admin',
+  bendahara: '/bendahara',
   user: '/app',
 }
 
@@ -57,7 +58,7 @@ export function LoginPage() {
           <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-accent/30 bg-surface-card/10 backdrop-blur-sm">
             <IconLogo className="h-9 w-9" />
           </div>
-          <h1 className="text-2xl font-medium text-white sm:text-3xl">KoperasiUnilak</h1>
+          <h1 className="text-2xl font-medium text-white sm:text-3xl">Koperasi Unilak</h1>
           <p className="mt-2 max-w-sm text-sm leading-relaxed text-white/70">
             Platform manajemen simpanan dan pinjaman anggota koperasi
           </p>

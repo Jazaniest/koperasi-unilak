@@ -1,7 +1,7 @@
 import { Navbar } from '../components/layout/Navbar'
 import { Footer } from '../components/layout/Footer'
 import { Card, StatCard } from '../components/ui/Card'
-import { Badge } from '../components/ui/Badge'
+// import { Badge } from '../components/ui/Badge'
 import { IconUsers, IconWallet, IconLoan } from '../components/ui/Icons'
 import { formatCurrency } from '../utils/format'
 
@@ -13,58 +13,58 @@ const dummyStats = {
     totalLoans: 2_340_000_000,
 }
 
-const dummyAngsuran = [
-    {
-        id: 'ANG-001',
-        memberName: 'Ahmad Fauzi',
-        memberNumber: 'KU-2021-0045',
-        pinjaman: 10_000_000,
-        angsuranPerBulan: 916_667,
-        sisaBulan: 6,
-        jatuhTempo: '2025-07-05',
-        status: 'active',
-    },
-    {
-        id: 'ANG-002',
-        memberName: 'Siti Rahayu',
-        memberNumber: 'KU-2020-0118',
-        pinjaman: 5_000_000,
-        angsuranPerBulan: 458_333,
-        sisaBulan: 3,
-        jatuhTempo: '2025-04-10',
-        status: 'active',
-    },
-    {
-        id: 'ANG-003',
-        memberName: 'Budi Santoso',
-        memberNumber: 'KU-2022-0033',
-        pinjaman: 15_000_000,
-        angsuranPerBulan: 1_375_000,
-        sisaBulan: 9,
-        jatuhTempo: '2025-10-15',
-        status: 'active',
-    },
-    {
-        id: 'ANG-004',
-        memberName: 'Dewi Pertiwi',
-        memberNumber: 'KU-2021-0207',
-        pinjaman: 8_000_000,
-        angsuranPerBulan: 733_333,
-        sisaBulan: 0,
-        jatuhTempo: '2025-01-20',
-        status: 'completed',
-    },
-    {
-        id: 'ANG-005',
-        memberName: 'Rudi Hermawan',
-        memberNumber: 'KU-2023-0009',
-        pinjaman: 20_000_000,
-        angsuranPerBulan: 1_833_333,
-        sisaBulan: 11,
-        jatuhTempo: '2025-12-01',
-        status: 'active',
-    },
-]
+// const dummyAngsuran = [
+//     {
+//         id: 'ANG-001',
+//         memberName: 'Ahmad Fauzi',
+//         memberNumber: 'KU-2021-0045',
+//         pinjaman: 10_000_000,
+//         angsuranPerBulan: 916_667,
+//         sisaBulan: 6,
+//         jatuhTempo: '2025-07-05',
+//         status: 'active',
+//     },
+//     {
+//         id: 'ANG-002',
+//         memberName: 'Siti Rahayu',
+//         memberNumber: 'KU-2020-0118',
+//         pinjaman: 5_000_000,
+//         angsuranPerBulan: 458_333,
+//         sisaBulan: 3,
+//         jatuhTempo: '2025-04-10',
+//         status: 'active',
+//     },
+//     {
+//         id: 'ANG-003',
+//         memberName: 'Budi Santoso',
+//         memberNumber: 'KU-2022-0033',
+//         pinjaman: 15_000_000,
+//         angsuranPerBulan: 1_375_000,
+//         sisaBulan: 9,
+//         jatuhTempo: '2025-10-15',
+//         status: 'active',
+//     },
+//     {
+//         id: 'ANG-004',
+//         memberName: 'Dewi Pertiwi',
+//         memberNumber: 'KU-2021-0207',
+//         pinjaman: 8_000_000,
+//         angsuranPerBulan: 733_333,
+//         sisaBulan: 0,
+//         jatuhTempo: '2025-01-20',
+//         status: 'completed',
+//     },
+//     {
+//         id: 'ANG-005',
+//         memberName: 'Rudi Hermawan',
+//         memberNumber: 'KU-2023-0009',
+//         pinjaman: 20_000_000,
+//         angsuranPerBulan: 1_833_333,
+//         sisaBulan: 11,
+//         jatuhTempo: '2025-12-01',
+//         status: 'active',
+//     },
+// ]
 
 const features = [
     {
@@ -85,13 +85,13 @@ const features = [
 ]
 // ─────────────────────────────────────────────────────────────────
 
-function formatDate(dateStr) {
-    return new Date(dateStr).toLocaleDateString('id-ID', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-    })
-}
+// function formatDate(dateStr) {
+//     return new Date(dateStr).toLocaleDateString('id-ID', {
+//         day: 'numeric',
+//         month: 'short',
+//         year: 'numeric',
+//     })
+// }
 
 export function LandingPage() {
     return (
@@ -103,11 +103,11 @@ export function LandingPage() {
                 <div className="mx-auto max-w-6xl px-6 py-16 sm:py-24">
                     <div className="max-w-2xl">
                         <span className="inline-block rounded-xl bg-primary/8 px-3 py-1 text-xs font-medium text-primary">
-                            Koperasi Simpan Pinjam
+                            Koperasi Konsumen Karyawan dan Dosen
                         </span>
                         <h1 className="mt-4 text-3xl font-medium leading-snug text-text-primary sm:text-4xl lg:text-5xl">
                             Kelola Keuangan Anda<br />
-                            <span className="text-primary">Bersama KoperasiUnilak</span>
+                            <span className="text-primary">Bersama Koperasi Unilak</span>
                         </h1>
                         <p className="mt-4 text-base leading-relaxed text-text-muted sm:text-lg">
                             Platform manajemen koperasi digital untuk sivitas akademika Universitas Lancang Kuning.
@@ -176,7 +176,7 @@ export function LandingPage() {
             </section>
 
             {/* ── Tabel Angsuran ──────────────────────────────────────── */}
-            <section className="mx-auto w-full max-w-6xl px-6 pb-14 sm:pb-20">
+            {/* <section className="mx-auto w-full max-w-6xl px-6 pb-14 sm:pb-20">
                 <Card>
                     <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
                         <div>
@@ -237,7 +237,7 @@ export function LandingPage() {
                         </table>
                     </div>
                 </Card>
-            </section>
+            </section> */}
 
             <div className="flex-1" />
             <Footer />
