@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { ProtectedRoute } from './components/layout/ProtectedRoute'
 import { LoginPage } from './pages/LoginPage'
+import { RegisterPage } from './pages/RegisterPage'
 import { UserDashboard } from './pages/user/UserDashboard'
 import { UserSavingsPage } from './pages/user/UserSavingsPage'
 import { UserLoansPage } from './pages/user/UserLoansPage'
@@ -8,11 +9,13 @@ import { UserLoanApplicationPage } from './pages/user/UserLoanApplicationPage'
 import { AdminDashboard } from './pages/admin/AdminDashboard'
 import { AdminMembersPage } from './pages/admin/AdminMembersPage'
 import { AdminMemberDetailPage } from './pages/admin/AdminMemberDetailPage'
+import { AdminRegistrationsPage } from './pages/admin/AdminRegistrationsPage'
 // ── BARU: Bendahara ───────────────────────────────────────────────────────────
 import { BendaharaDashboard } from './pages/bendahara/BendaharaDashboard'
 import { BendaharaApplicationsPage } from './pages/bendahara/BendaharaApplicationsPage'
 import { BendaharaMembersPage } from './pages/bendahara/BendaharaMembersPage'
 import { BendaharaMemberDetailPage } from './pages/bendahara/BendaharaMemberDetailPage'
+import { BendaharaResignationsPage } from './pages/bendahara/BendaharaResignationsPage'
 // ─────────────────────────────────────────────────────────────────────────────
 // import { SuperDashboard } from './pages/super/SuperDashboard'
 // import { SuperDatabasePage } from './pages/super/SuperDatabasePage'
@@ -29,6 +32,7 @@ export default function App() {
       <Route path="/struktur-pengurus" element={<StrukturPengurusPage />} />
       <Route path="/simulasi-pinjaman" element={<SimulasiPinjamanPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
 
       {/* ── User ── */}
       <Route
@@ -89,6 +93,14 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/admin/pendaftaran"
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <AdminRegistrationsPage />
+          </ProtectedRoute>
+        }
+      />
 
       {/* ── Bendahara (BARU) ── */}
       <Route
@@ -120,6 +132,14 @@ export default function App() {
         element={
           <ProtectedRoute roles={['bendahara']}>
             <BendaharaMemberDetailPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/bendahara/pengunduran-diri"
+        element={
+          <ProtectedRoute roles={['bendahara']}>
+            <BendaharaResignationsPage />
           </ProtectedRoute>
         }
       />
