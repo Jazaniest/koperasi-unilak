@@ -6,8 +6,9 @@ let cache = null
 function load() {
   if (cache) return cache
   let db = getDb()
-  if (!db) {
-    db = createSeedDatabase()
+  const fresh = createSeedDatabase()          // ← baca versi terbaru
+  if (!db || db.version !== fresh.version) {  // ← bandingkan versi
+    db = fresh
     setDb(db)
   }
   cache = db

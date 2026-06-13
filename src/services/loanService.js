@@ -102,3 +102,35 @@ export function getMemberLoans(memberId) {
   const db = getDatabase()
   return db.loans.filter((l) => l.memberId === memberId)
 }
+
+export function settleLoan(loanId, processedBy) {
+  const db = getDatabase()
+  const loan = db.loans.find((l) => l.id === loanId)
+  if (!loan) return { success: false, error: 'Pinjaman tidak ditemukan' }
+  if (loan.status !== 'active') return { success: false, error: 'Pinjaman tidak aktif' }
+
+  updateDatabase((d) => {
+    const l = d.loans.find((x) => x.id === loanId)
+    const sisaPelunasan = l.remaining
+
+    l.remaining = 0
+    l.status = 'lunas'
+    l.settledAt = new Date().toISOString().slice(0, 10)
+    l.settledBy = processedBy
+
+    // Catat di loanPayments sebagai pelunasan sekaligus
+    d.loanPayments = d.loanPayments ?? []
+    d.loanPayments.push({
+      id: generateId('pay'),
+      loanId,
+      amount: sisaPelunasan,
+      date: new Date().toISOString().slice(0, 10),
+      description: 'Pelunasan penuh',
+      remainingAfter: 0,
+    })
+    return d
+  })
+
+  addSystemLog('info', `Pinjaman ${loanId} dilunasi penuh oleh ${processedBy}`)
+  return { success: true }
+}
