@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { DashboardLayout } from '../../components/layout/DashboardLayout'
 import { Card } from '../../components/ui/Card'
@@ -8,8 +9,15 @@ import { UserNavbar } from '../../components/user/UserNavbar'
 
 export function UserSavingsPage() {
   const { user } = useAuth()
-  const member = getMemberByUserId(user.id)
-  const savings = member ? getMemberSavings(member.id) : null
+  // const [member, setMember] = useState(null)
+  const [savings, setSavings] = useState(null)
+
+  useEffect(() => {
+    getMemberByUserId(user.id).then(async (m) => {
+      // setMember(m)
+      if (m) getMemberSavings(m.id).then(setSavings)
+    })
+  }, [user.id])
 
   return (
     <DashboardLayout title="Simpanan Saya" subtitle="Riwayat dan rincian simpanan" navItems={UserNavbar}>

@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { DashboardLayout } from '../../components/layout/DashboardLayout'
 import { Card } from '../../components/ui/Card'
@@ -9,8 +10,13 @@ import { UserNavbar } from '../../components/user/UserNavbar'
 
 export function UserLoansPage() {
   const { user } = useAuth()
-  const member = getMemberByUserId(user.id)
-  const loans = member ? getMemberLoans(member.id) : []
+  const [loans, setLoans] = useState([])
+
+  useEffect(() => {
+    getMemberByUserId(user.id).then((m) => {
+      if (m) getMemberLoans(m.id).then(setLoans)
+    })
+  }, [user.id])
 
   return (
     <DashboardLayout title="Pinjaman Saya" subtitle="Daftar pinjaman dan cicilan" navItems={UserNavbar}>

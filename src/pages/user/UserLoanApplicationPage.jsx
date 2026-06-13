@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { DashboardLayout } from '../../components/layout/DashboardLayout'
 import { Card } from '../../components/ui/Card'
@@ -6,13 +6,13 @@ import { Input, Textarea, Select } from '../../components/ui/Input'
 import { Button } from '../../components/ui/Button'
 import { Badge } from '../../components/ui/Badge'
 import { getMemberByUserId } from '../../services/memberService'
-import { submitLoanApplication, getLoanApplications } from '../../services/loanService'
+import { submitLoanApplication, getLoanApplications } from '../../services/loanApplicationService'
 import { formatCurrency, formatDateTime } from '../../utils/format'
 import { UserNavbar } from '../../components/user/UserNavbar'
 
 export function UserLoanApplicationPage() {
   const { user } = useAuth()
-  const member = getMemberByUserId(user.id)
+  const [member, setMember] = useState(null)
   const [form, setForm] = useState({
     amount: '',
     purpose: '',
@@ -24,10 +24,17 @@ export function UserLoanApplicationPage() {
   const [loading, setLoading] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
 
-  const applications = member ? getLoanApplications({ memberId: member.id }) : []
-  void refreshKey
+  const [applications, setApplications] = useState([])
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    getMemberByUserId(user.id).then(setMember)
+  }, [user.id])
+
+  useEffect(() => {
+    if (member) getLoanApplications({ memberId: member.id }).then(setApplications)
+  }, [member, refreshKey])
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     setSuccess('')
@@ -36,7 +43,12 @@ export function UserLoanApplicationPage() {
       return
     }
     setLoading(true)
-    const result = submitLoanApplication(member.id, form)
+    const result = await submitLoanApplication(member.id, {
+      amount: Number(form.amount),
+      purpose: form.purpose,
+      tenorMonths: Number(form.tenorMonths),
+      collateral: form.collateral?.name || '',   // ← kirim nama file, bukan File object
+    })
     setLoading(false)
     if (result.success) {
       setSuccess('Pengajuan berhasil dikirim. Admin akan meninjau segera.')

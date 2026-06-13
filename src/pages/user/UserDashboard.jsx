@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { DashboardLayout } from '../../components/layout/DashboardLayout'
@@ -7,16 +8,34 @@ import { Button } from '../../components/ui/Button'
 import { IconWallet, IconLoan, IconFile } from '../../components/ui/Icons'
 import { getMemberByUserId } from '../../services/memberService'
 import { getMemberSavings } from '../../services/savingsService'
-import { getMemberLoans, getLoanApplications } from '../../services/loanService'
+import { getMemberLoans } from '../../services/loanService'
+import { getLoanApplications } from '../../services/loanApplicationService'
 import { formatCurrency, formatDate } from '../../utils/format'
 import { UserNavbar } from '../../components/user/UserNavbar'
 
 export function UserDashboard() {
   const { user } = useAuth()
-  const member = getMemberByUserId(user.id)
-  const savings = member ? getMemberSavings(member.id) : null
-  const loans = member ? getMemberLoans(member.id) : []
-  const applications = member ? getLoanApplications({ memberId: member.id }) : []
+  const [member, setMember] = useState(null)
+  const [savings, setSavings] = useState(null)
+  const [loans, setLoans] = useState([])
+  const [applications, setApplications] = useState([])
+
+  useEffect(() => {
+    getMemberByUserId(user.id).then(async (m) => {
+      setMember(m)
+      if (m) {
+        const [s, l, a] = await Promise.all([
+          getMemberSavings(m.id),
+          getMemberLoans(m.id),
+          getLoanApplications({ memberId: m.id }),
+        ])
+        setSavings(s)
+        setLoans(l)
+        setApplications(a)
+      }
+    })
+  }, [user.id])
+
   const activeLoans = loans.filter((l) => l.status === 'active')
   const totalRemaining = activeLoans.reduce((s, l) => s + l.remaining, 0)
   const pendingApp = applications.find((a) => a.status === 'pending')
