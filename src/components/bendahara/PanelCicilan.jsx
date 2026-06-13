@@ -18,7 +18,7 @@ export function PanelCicilan({ loans, onManualProcess, onSchedulerChange, schedu
     async function handleConfirm() {
         setProcessing(true)
         await new Promise((r) => setTimeout(r, 600))
-        const results = onManualProcess()
+        const results = await onManualProcess()
         setProcessing(false)
         setShowModal(false)
         setLastResult({ count: results.length, total: results.reduce((s, r) => s + r.amount, 0) })

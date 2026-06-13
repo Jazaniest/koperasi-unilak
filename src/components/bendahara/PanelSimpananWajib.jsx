@@ -15,7 +15,7 @@ export function PanelSimpananWajib({ totalAnggotaAktif, onManualProcess, onSched
     async function handleConfirm() {
         setProcessing(true)
         await new Promise((r) => setTimeout(r, 600))
-        const results = onManualProcess()
+        const results = await onManualProcess()
         setProcessing(false)
         setShowModal(false)
 
