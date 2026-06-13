@@ -7,34 +7,23 @@ import { getMemberById } from '../../services/memberService'
 import { SAVINGS_TYPE_LABELS } from '../../services/savingsService'
 import { formatCurrency, formatDate } from '../../utils/format'
 import { BendaharaNavbar } from '../../components/bendahara/BendaharaNavbar'
-import { useState } from 'react'                          // ← tambah
+import { useState, useEffect } from 'react'                          // ← tambah
 import { useAuth } from '../../context/AuthContext'       // ← tambah
 import { settleLoan } from '../../services/loanService'   // ← tambah
 
 export function BendaharaMemberDetailPage() {
     const { id } = useParams()
-    const member = getMemberById(id)
     const { user } = useAuth()
     const [confirmLoanId, setConfirmLoanId] = useState(null)
     const [settling, setSettling] = useState(false)
     const [settleError, setSettleError] = useState(null)
-    const [memberData, setMemberData] = useState(member)   // ← ganti `member` → `memberData` di seluruh JSX
+    const [memberData, setMemberData] = useState(null)
 
-    async function handleSettle() {
-        setSettling(true)
-        setSettleError(null)
-        await new Promise((r) => setTimeout(r, 500))
-        const result = settleLoan(confirmLoanId, user.id)
-        setSettling(false)
-        if (result.success) {
-            setConfirmLoanId(null)
-            setMemberData(getMemberById(id))   // refresh data anggota
-        } else {
-            setSettleError(result.error)
-        }
-    }
+    useEffect(() => {
+        getMemberById(id).then(setMemberData)
+    }, [id])
 
-    if (!member) {
+    if (!memberData) {
         return (
             <DashboardLayout title="Anggota tidak ditemukan" navItems={BendaharaNavbar}>
                 <Link to="/bendahara/anggota">
@@ -44,8 +33,22 @@ export function BendaharaMemberDetailPage() {
         )
     }
 
+    async function handleSettle() {
+        setSettling(true)
+        setSettleError(null)
+        await new Promise((r) => setTimeout(r, 500))
+        const result = await settleLoan(confirmLoanId, user.id)  // ← tambah await
+        setSettling(false)
+        if (result.success) {
+            setConfirmLoanId(null)
+            getMemberById(id).then(setMemberData)
+        } else {
+            setSettleError(result.error)
+        }
+    }
+
     return (
-        <DashboardLayout title={member.name} subtitle={member.memberNumber} navItems={BendaharaNavbar}>
+        <DashboardLayout title={memberData.name} subtitle={memberData.memberNumber} navItems={BendaharaNavbar}>
             <Link to="/bendahara/anggota" className="mb-5 inline-block ds-link">
                 ← Kembali ke daftar
             </Link>
@@ -56,36 +59,36 @@ export function BendaharaMemberDetailPage() {
                     <dl className="mt-5 space-y-4 text-sm">
                         <div>
                             <dt className="text-text-muted">NIK</dt>
-                            <dd className="mt-0.5 font-medium text-text-primary">{member.nik}</dd>
+                            <dd className="mt-0.5 font-medium text-text-primary">{memberData.nik}</dd>
                         </div>
                         <div>
                             <dt className="text-text-muted">Email</dt>
-                            <dd className="mt-0.5 font-medium text-text-primary">{member.email}</dd>
+                            <dd className="mt-0.5 font-medium text-text-primary">{memberData.email}</dd>
                         </div>
                         <div>
                             <dt className="text-text-muted">Telepon</dt>
-                            <dd className="mt-0.5 font-medium text-text-primary">{member.phone}</dd>
+                            <dd className="mt-0.5 font-medium text-text-primary">{memberData.phone}</dd>
                         </div>
                         <div>
                             <dt className="text-text-muted">Alamat</dt>
-                            <dd className="mt-0.5 font-medium leading-relaxed text-text-primary">{member.address}</dd>
+                            <dd className="mt-0.5 font-medium leading-relaxed text-text-primary">{memberData.address}</dd>
                         </div>
                         <div>
                             <dt className="text-text-muted">Pekerjaan</dt>
-                            <dd className="mt-0.5 font-medium text-text-primary">{member.occupation}</dd>
+                            <dd className="mt-0.5 font-medium text-text-primary">{memberData.occupation}</dd>
                         </div>
                         <div>
                             <dt className="text-text-muted">Penghasilan/bulan</dt>
-                            <dd className="mt-0.5 font-medium text-text-primary">{formatCurrency(member.monthlyIncome)}</dd>
+                            <dd className="mt-0.5 font-medium text-text-primary">{formatCurrency(memberData.monthlyIncome)}</dd>
                         </div>
                         <div>
                             <dt className="text-text-muted">Bergabung</dt>
-                            <dd className="mt-0.5 font-medium text-text-primary">{formatDate(member.joinDate)}</dd>
+                            <dd className="mt-0.5 font-medium text-text-primary">{formatDate(memberData.joinDate)}</dd>
                         </div>
                         <div>
                             <dt className="text-text-muted">Status</dt>
                             <dd className="mt-1">
-                                <Badge status={member.status} />
+                                <Badge status={memberData.status} />
                             </dd>
                         </div>
                     </dl>
@@ -95,18 +98,18 @@ export function BendaharaMemberDetailPage() {
                     <div className="grid gap-5 sm:grid-cols-2">
                         <Card highlight>
                             <p className="ds-label">Total Simpanan</p>
-                            <p className="ds-display-value mt-2 text-success">{formatCurrency(member.totalSavings)}</p>
+                            <p className="ds-display-value mt-2 text-success">{formatCurrency(memberData.totalSavings)}</p>
                         </Card>
                         <Card>
                             <p className="ds-label">Sisa Pinjaman Aktif</p>
-                            <p className="ds-display-value mt-2 text-primary">{formatCurrency(member.totalLoanRemaining)}</p>
+                            <p className="ds-display-value mt-2 text-primary">{formatCurrency(memberData.totalLoanRemaining)}</p>
                         </Card>
                     </div>
 
                     <Card>
                         <h3 className="font-medium text-text-primary">Riwayat Simpanan</h3>
                         <ul className="mt-4 divide-y divide-gray-50 text-sm">
-                            {member.savings.map((s) => (
+                            {memberData.savings.map((s) => (
                                 <li key={s.id} className="flex justify-between gap-4 py-3">
                                     <span className="text-text-muted">
                                         {SAVINGS_TYPE_LABELS[s.type]} — {s.description}
@@ -158,7 +161,7 @@ export function BendaharaMemberDetailPage() {
                     <Card>
                         <h3 className="font-medium text-text-primary">Pengajuan Pinjaman</h3>
                         <ul className="mt-4 space-y-3">
-                            {member.loanApplications.map((a) => (
+                            {memberData.loanApplications.map((a) => (
                                 <li
                                     key={a.id}
                                     className="flex justify-between gap-3 rounded-xl border border-gray-100 bg-surface px-4 py-3 text-sm"

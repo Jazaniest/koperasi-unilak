@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { DashboardLayout } from '../../components/layout/DashboardLayout'
 import { Card } from '../../components/ui/Card'
@@ -10,7 +10,11 @@ import { BendaharaNavbar } from '../../components/bendahara/BendaharaNavbar'
 
 export function BendaharaMembersPage() {
     const [search, setSearch] = useState('')
-    const members = getAllMembers()
+    const [members, setMembers] = useState([])
+
+    useEffect(() => {
+        getAllMembers().then(setMembers)
+    }, [])
     const filtered = members.filter(
         (m) =>
             m.name.toLowerCase().includes(search.toLowerCase()) ||

@@ -1,37 +1,118 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { DashboardLayout } from '../../components/layout/DashboardLayout'
 import { Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
 import { Textarea } from '../../components/ui/Input'
-import { getLoanApplications, reviewLoanApplication } from '../../services/loanService'
+import { getLoanApplications, reviewLoanApplication } from '../../services/loanApplicationService'
 import { formatCurrency, formatDateTime } from '../../utils/format'
 import { BendaharaNavbar } from '../../components/bendahara/BendaharaNavbar'
 
+// ── KOMPONEN MODAL KONFIRMASI ───────────────────────────────────────────────
+export function ModalKonfirmasi({ open, title, description, onConfirm, onCancel, loading }) {
+    if (!open) return null
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* backdrop */}
+            <div className="absolute inset-0 bg-primary/40 backdrop-blur-sm" onClick={onCancel} />
+            <div className="relative w-full max-w-sm rounded-2xl border border-gray-100 bg-surface-card p-6 shadow-xl animate-fade-in">
+                <h3 className="font-medium text-text-primary">{title}</h3>
+                <p className="mt-2 text-sm text-text-muted leading-relaxed">{description}</p>
+                <div className="mt-5 flex gap-3 justify-end">
+                    <button
+                        onClick={onCancel}
+                        disabled={loading}
+                        className="rounded-xl border border-gray-200 px-4 py-2 text-sm text-text-muted transition hover:bg-gray-50 disabled:opacity-50"
+                    >
+                        Batal
+                    </button>
+                    <button
+                        onClick={onConfirm}
+                        disabled={loading}
+                        className="rounded-xl bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-light disabled:opacity-60"
+                    >
+                        {loading ? 'Memproses...' : 'Ya, Proses Sekarang'}
+                    </button>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+// ── HALAMAN UTAMA ───────────────────────────────────────────────────────────
 export function BendaharaApplicationsPage() {
     const { user } = useAuth()
     const [filter, setFilter] = useState('pending')
     const [selectedId, setSelectedId] = useState(null)
     const [notes, setNotes] = useState('')
     const [refreshKey, setRefreshKey] = useState(0)
+    const [apps, setApps] = useState([])
 
-    const apps = getLoanApplications(filter === 'all' ? {} : { status: filter })
-    void refreshKey
+    // State untuk mengontrol Modal Konfirmasi
+    const [modalConfig, setModalConfig] = useState({
+        open: false,
+        title: '',
+        description: '',
+        decision: null,
+        loading: false,
+    })
+
+    useEffect(() => {
+        getLoanApplications(filter === 'all' ? {} : { status: filter }).then(setApps)
+    }, [filter, refreshKey])
+
     const selected = apps.find((a) => a.id === selectedId) ?? apps[0]
 
-    const handleReview = (decision) => {
+    // Pemicu awal ketika tombol "Setujui" atau "Tolak" diklik
+    const openConfirmation = (decision) => {
         if (!selected) return
-        const result = reviewLoanApplication(
-            selected.id,
-            user.id,
-            decision,
-            notes || (decision === 'approved' ? 'Disetujui' : 'Ditolak'),
-        )
-        if (result.success) {
-            setNotes('')
-            setSelectedId(null)
-            setRefreshKey((k) => k + 1)
+        const isApprove = decision === 'approved'
+        
+        setModalConfig({
+            open: true,
+            title: isApprove ? 'Setujui Pengajuan' : 'Tolak Pengajuan',
+            description: `Apakah Anda yakin ingin ${isApprove ? 'menyetujui' : 'menolak'} pengajuan pinjaman dari ${selected.memberName} sebesar ${formatCurrency(selected.amount)}?`,
+            decision: decision,
+            loading: false,
+        })
+    }
+
+    // Eksekusi review setelah dikonfirmasi di dalam modal
+    const handleReview = async () => {
+        if (!selected || !modalConfig.decision) return
+
+        // Set loading modal menjadi true
+        setModalConfig((prev) => ({ ...prev, loading: true }))
+
+        try {
+            const defaultNote = modalConfig.decision === 'approved' ? 'Disetujui' : 'Ditolak'
+            
+            // Ditambahkan await karena fungsi ini melakukan hit ke API / Database
+            const result = await reviewLoanApplication(
+                selected.id,
+                user.id,
+                modalConfig.decision,
+                notes.trim() || defaultNote,
+            )
+
+            if (result.success) {
+                setNotes('')
+                setSelectedId(null)
+                // Memicu useEffect untuk menarik data terbaru (auto refresh)
+                setRefreshKey((k) => k + 1)
+            }
+        } catch (error) {
+            console.error("Gagal memperbarui status pengajuan:", error)
+        } finally {
+            // Tutup dan reset modal setelah selesai
+            setModalConfig({
+                open: false,
+                title: '',
+                description: '',
+                decision: null,
+                loading: false,
+            })
         }
     }
 
@@ -55,8 +136,8 @@ export function BendaharaApplicationsPage() {
                         type="button"
                         onClick={() => setFilter(f)}
                         className={`rounded-xl px-4 py-2 text-sm font-medium transition ${filter === f
-                                ? 'bg-primary text-white shadow-sm'
-                                : 'border border-gray-200 bg-surface-card text-text-muted hover:bg-surface'
+                            ? 'bg-primary text-white shadow-sm'
+                            : 'border border-gray-200 bg-surface-card text-text-muted hover:bg-surface'
                             }`}
                     >
                         {filterLabels[f]}
@@ -128,10 +209,10 @@ export function BendaharaApplicationsPage() {
                                     placeholder="Alasan persetujuan atau penolakan..."
                                 />
                                 <div className="flex gap-3">
-                                    <Button className="flex-1" onClick={() => handleReview('approved')}>
+                                    <Button className="flex-1" onClick={() => openConfirmation('approved')}>
                                         Setujui
                                     </Button>
-                                    <Button variant="danger" className="flex-1" onClick={() => handleReview('rejected')}>
+                                    <Button variant="danger" className="flex-1" onClick={() => openConfirmation('rejected')}>
                                         Tolak
                                     </Button>
                                 </div>
@@ -146,6 +227,16 @@ export function BendaharaApplicationsPage() {
                     </Card>
                 )}
             </div>
+
+            {/* Injeksi Komponen Modal Konfirmasi ke dalam DOM render */}
+            <ModalKonfirmasi
+                open={modalConfig.open}
+                title={modalConfig.title}
+                description={modalConfig.description}
+                loading={modalConfig.loading}
+                onConfirm={handleReview}
+                onCancel={() => setModalConfig((prev) => ({ ...prev, open: false }))}
+            />
         </DashboardLayout>
     )
 }

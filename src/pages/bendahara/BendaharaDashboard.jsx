@@ -1,5 +1,5 @@
 // pages/bendahara/BendaharaDashboard.jsx
-import { useMemo, useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { DashboardLayout } from '../../components/layout/DashboardLayout'
 import { StatCard, Card } from '../../components/ui/Card'
@@ -7,7 +7,7 @@ import { Badge } from '../../components/ui/Badge'
 import { IconWallet, IconLoan } from '../../components/ui/Icons'
 import {
     getTreasurerStats,
-    getAllSavingsTransactions,
+    // getAllSavingsTransactions,
     getAllLoansWithMembers,
     getLast6MonthsReport,
     MONTH_NAMES,
@@ -20,6 +20,7 @@ import {
     saveSchedulerWajibConfig,
     checkAndRunSchedulerWajib,
 } from '../../services/treasureService'
+import { getAllSavingsTransactions } from '../../services/savingsService'
 import { formatCurrency, formatDate } from '../../utils/format'
 import { BendaharaNavbar } from '../../components/bendahara/BendaharaNavbar'
 
@@ -58,16 +59,30 @@ function IconCash({ className }) {
 // ─── Dashboard Utama ─────────────────────────────────────────────────────────
 
 export function BendaharaDashboard() {
-    const [stats, setStats] = useState(() => getTreasurerStats())
-    const savingsTx = useMemo(() => getAllSavingsTransactions().slice(0, 6), [])
-    const monthlyReports = useMemo(() => getLast6MonthsReport(), [])
-    const [loans, setLoans] = useState(() => getAllLoansWithMembers())
+    // const [stats, setStats] = useState(() => getTreasurerStats())
+    // const savingsTx = useMemo(() => getAllSavingsTransactions().slice(0, 6), [])
+    // const monthlyReports = useMemo(() => getLast6MonthsReport(), [])
+    // const [loans, setLoans] = useState(() => getAllLoansWithMembers())
+    // const [scheduler, setScheduler] = useState(() => getSchedulerConfig())
+    // const [schedulerWajib, setSchedulerWajib] = useState(() => getSchedulerWajibConfig())
+    const [loading, setLoading] = useState(true)
+
+    const [stats, setStats] = useState(null)
+    const [loans, setLoans] = useState([])
+    const [savingsTx, setSavingsTx] = useState([])
+    const [monthlyReports, setMonthlyReports] = useState([])
+
     const [scheduler, setScheduler] = useState(() => getSchedulerConfig())
     const [schedulerWajib, setSchedulerWajib] = useState(() => getSchedulerWajibConfig())
 
-    function handleManualProcess() {
-        const results = processMonthlyCicilan()
-        setLoans(getAllLoansWithMembers())
+    async function handleManualProcess() {
+        const results = await processMonthlyCicilan()
+        const [updatedLoans, updatedReports] = await Promise.all([
+            getAllLoansWithMembers(),
+            getLast6MonthsReport(),
+        ])
+        setLoans(updatedLoans)
+        setMonthlyReports(updatedReports)
         return results
     }
 
@@ -81,35 +96,60 @@ export function BendaharaDashboard() {
         value: r.simpananMasuk + r.cicilanDiterima,
     }))
 
-    useEffect(() => {
-        function initScheduler() {
-            const resultsCicilan = checkAndRunScheduler()
-            const resultsWajib = checkAndRunSchedulerWajib()
-
-            const needRefreshLoans = resultsCicilan?.length > 0
-            const needRefreshStats = resultsWajib?.length > 0
-
-            if (needRefreshLoans) {
-                setLoans(getAllLoansWithMembers())
-            }
-
-            if (needRefreshLoans || needRefreshStats) {
-                setStats(getTreasurerStats())
-            }
-        }
-
-        initScheduler()
-    }, [])
-
-    function handleWajibProcess() {
-        const results = processSimapananWajib()
-        setStats(getTreasurerStats())
+    async function handleWajibProcess() {
+        const results = await processSimapananWajib()
+        const [updatedStats, updatedReports] = await Promise.all([
+            getTreasurerStats(),
+            getLast6MonthsReport(),
+        ])
+        setStats(updatedStats)
+        setMonthlyReports(updatedReports)
+        console.log('updatedReports:', updatedReports)
         return results
     }
 
     function handleSchedulerWajibChange(newConfig) {
         saveSchedulerWajibConfig(newConfig)
         setSchedulerWajib(newConfig)
+    }
+
+    useEffect(() => {
+        async function loadDashboard() {
+            try {
+                const [statsData, loansData, savingsData, reportsData] = await Promise.all([
+                    getTreasurerStats(),
+                    getAllLoansWithMembers(),
+                    getAllSavingsTransactions(),
+                    getLast6MonthsReport(),
+                ])
+
+                setStats(statsData)
+                setLoans(loansData)
+                setSavingsTx(savingsData.slice(0, 6))
+                setMonthlyReports(reportsData)
+
+                // Jalankan scheduler otomatis setelah data load
+                await checkAndRunScheduler()
+                await checkAndRunSchedulerWajib()
+            } catch (err) {
+                console.error('Dashboard load failed:', err)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        loadDashboard()
+    }, [])
+
+    if (loading) {
+        return (
+            <DashboardLayout
+                title="Dashboard Bendahara"
+                navItems={BendaharaNavbar}
+            >
+                <p>Loading...</p>
+            </DashboardLayout>
+        )
     }
 
     const thisMonthReport = monthlyReports[monthlyReports.length - 1]
