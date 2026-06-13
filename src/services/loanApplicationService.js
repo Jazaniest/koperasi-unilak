@@ -28,11 +28,21 @@ export async function getMemberApplications(memberId) {
  * Body: { amount, purpose, tenorMonths, collateral }
  * Backend ambil memberId dari JWT — tidak perlu kirim dari frontend
  */
+//tambahkan untuk upload file disini, sekarang belum ada
 export async function submitLoanApplication(_memberId, data) {
     try {
+        const formData = new FormData()
+        formData.append('amount', data.amount)
+        formData.append('purpose', data.purpose)
+        formData.append('tenorMonths', data.tenorMonths)
+        if (data.collateral instanceof File) {
+            formData.append('collateral', data.collateral)
+        }
+
         const res = await apiRequest('/loan-applications/loan', {
             method: 'POST',
-            body: JSON.stringify(data),
+            body: formData,
+            // jangan set Content-Type, biar browser set otomatis dengan boundary
         })
         return { success: true, application: res.data }
     } catch (err) {
