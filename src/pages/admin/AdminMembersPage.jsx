@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { DashboardLayout } from '../../components/layout/DashboardLayout'
 import { Card } from '../../components/ui/Card'
@@ -9,8 +9,18 @@ import { formatCurrency } from '../../utils/format'
 import { AdminNavbar } from '../../components/admin/AdminNavbar'
 
 export function AdminMembersPage() {
+  const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
-  const members = getAllMembers()
+  const [members, setMembers] = useState([])  // ← default array kosong
+
+  useEffect(() => {
+    getAllMembers()
+      .then(setMembers)
+      .finally(() => setLoading(false))
+  }, [])
+
+  if (loading) return <p>Memuat data...</p>
+
   const filtered = members.filter(
     (m) =>
       m.name.toLowerCase().includes(search.toLowerCase()) ||

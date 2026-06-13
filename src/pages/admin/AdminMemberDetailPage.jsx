@@ -7,10 +7,15 @@ import { getMemberById } from '../../services/memberService'
 import { SAVINGS_TYPE_LABELS } from '../../services/savingsService'
 import { formatCurrency, formatDate } from '../../utils/format'
 import { AdminNavbar } from '../../components/admin/AdminNavbar'
+import { useState, useEffect } from 'react'
 
 export function AdminMemberDetailPage() {
   const { id } = useParams()
-  const member = getMemberById(id)
+  const [member, setMember] = useState(null)
+
+  useEffect(() => {
+    getMemberById(id).then(setMember)
+  }, [id])
 
   if (!member) {
     return (

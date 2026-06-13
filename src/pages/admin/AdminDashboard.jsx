@@ -1,16 +1,43 @@
 import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import { DashboardLayout } from '../../components/layout/DashboardLayout'
 import { StatCard, Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
 import { IconUsers, IconFile, IconLoan, IconWallet } from '../../components/ui/Icons'
 import { getAdminStats } from '../../services/memberService'
-import { getLoanApplications } from '../../services/loanService'
+import { getLoanApplications } from '../../services/loanApplicationService'
 import { formatCurrency, formatDateTime } from '../../utils/format'
 import { AdminNavbar } from '../../components/admin/AdminNavbar'
 
 export function AdminDashboard() {
-  const stats = getAdminStats()
-  const pendingApps = getLoanApplications({ status: 'pending' })
+  const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState(null)
+  const [pendingApps, setPendingApps] = useState([])
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [statsData, appsData] =
+          await Promise.all([
+            getAdminStats(),
+            getLoanApplications({
+              status: 'pending',
+            }),
+          ])
+
+        setStats(statsData)
+        setPendingApps(appsData)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadData()
+  }, [])
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
 
   return (
     <DashboardLayout
