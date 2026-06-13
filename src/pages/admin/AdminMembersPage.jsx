@@ -4,15 +4,9 @@ import { DashboardLayout } from '../../components/layout/DashboardLayout'
 import { Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
 import { Input } from '../../components/ui/Input'
-import { IconHome, IconUsers, IconFile } from '../../components/ui/Icons'
 import { getAllMembers } from '../../services/memberService'
 import { formatCurrency } from '../../utils/format'
-
-const nav = [
-  { to: '/admin', label: 'Dashboard', icon: IconHome, end: true },
-  { to: '/admin/anggota', label: 'Anggota', icon: IconUsers },
-  { to: '/admin/pengajuan', label: 'Pengajuan Pinjaman', icon: IconFile },
-]
+import { AdminNavbar } from '../../components/admin/AdminNavbar'
 
 export function AdminMembersPage() {
   const [search, setSearch] = useState('')
@@ -25,7 +19,7 @@ export function AdminMembersPage() {
   )
 
   return (
-    <DashboardLayout title="Daftar Anggota" subtitle={`${members.length} anggota terdaftar`} navItems={nav}>
+    <DashboardLayout title="Daftar Anggota" subtitle={`${members.length} anggota terdaftar`} navItems={AdminNavbar}>
       <Card className="mb-6">
         <Input
           placeholder="Cari nama, no. anggota, atau email..."

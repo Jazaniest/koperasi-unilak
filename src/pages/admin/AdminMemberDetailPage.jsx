@@ -3,16 +3,10 @@ import { DashboardLayout } from '../../components/layout/DashboardLayout'
 import { Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
-import { IconHome, IconUsers, IconFile } from '../../components/ui/Icons'
 import { getMemberById } from '../../services/memberService'
 import { SAVINGS_TYPE_LABELS } from '../../services/savingsService'
 import { formatCurrency, formatDate } from '../../utils/format'
-
-const nav = [
-  { to: '/admin', label: 'Dashboard', icon: IconHome, end: true },
-  { to: '/admin/anggota', label: 'Anggota', icon: IconUsers },
-  { to: '/admin/pengajuan', label: 'Pengajuan Pinjaman', icon: IconFile },
-]
+import { AdminNavbar } from '../../components/admin/AdminNavbar'
 
 export function AdminMemberDetailPage() {
   const { id } = useParams()
@@ -20,7 +14,7 @@ export function AdminMemberDetailPage() {
 
   if (!member) {
     return (
-      <DashboardLayout title="Anggota tidak ditemukan" navItems={nav}>
+      <DashboardLayout title="Anggota tidak ditemukan" navItems={AdminNavbar}>
         <Link to="/admin/anggota">
           <Button variant="secondary">← Kembali</Button>
         </Link>
@@ -29,7 +23,7 @@ export function AdminMemberDetailPage() {
   }
 
   return (
-    <DashboardLayout title={member.name} subtitle={member.memberNumber} navItems={nav}>
+    <DashboardLayout title={member.name} subtitle={member.memberNumber} navItems={AdminNavbar}>
       <Link to="/admin/anggota" className="mb-5 inline-block ds-link">
         ← Kembali ke daftar
       </Link>

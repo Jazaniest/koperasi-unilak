@@ -2,16 +2,11 @@ import { Link } from 'react-router-dom'
 import { DashboardLayout } from '../../components/layout/DashboardLayout'
 import { StatCard, Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
-import { IconHome, IconUsers, IconFile, IconLoan, IconWallet } from '../../components/ui/Icons'
+import { IconUsers, IconFile, IconLoan, IconWallet } from '../../components/ui/Icons'
 import { getAdminStats } from '../../services/memberService'
 import { getLoanApplications } from '../../services/loanService'
 import { formatCurrency, formatDateTime } from '../../utils/format'
-
-const nav = [
-  { to: '/admin', label: 'Dashboard', icon: IconHome, end: true },
-  { to: '/admin/anggota', label: 'Anggota', icon: IconUsers },
-  { to: '/admin/pengajuan', label: 'Pengajuan Pinjaman', icon: IconFile },
-]
+import { AdminNavbar } from '../../components/admin/AdminNavbar'
 
 export function AdminDashboard() {
   const stats = getAdminStats()
@@ -21,7 +16,7 @@ export function AdminDashboard() {
     <DashboardLayout
       title="Dashboard Admin"
       subtitle="Kelola anggota dan persetujuan pinjaman"
-      navItems={nav}
+      navItems={AdminNavbar}
     >
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
