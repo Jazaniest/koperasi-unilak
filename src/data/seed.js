@@ -1,15 +1,17 @@
 export const DEMO_CREDENTIALS = [
   { email: 'superadmin@koperasi.dev', password: 'super123', label: 'Super Admin' },
   { email: 'admin@koperasi.dev', password: 'admin123', label: 'Admin' },
+  { email: 'bendahara@koperasi.dev', password: 'bendahara123', label: 'Bendahara' }, // ← BARU
   { email: 'budi@koperasi.dev', password: 'user123', label: 'Anggota (Budi)' },
   { email: 'siti@koperasi.dev', password: 'user123', label: 'Anggota (Siti)' },
+  { email: 'agus@koperasi.dev', password: 'user123', label: 'Anggota (Agus)' },
 ]
 
 export function createSeedDatabase() {
   const now = new Date().toISOString()
 
   return {
-    version: 1,
+    version: 2,
     updatedAt: now,
     users: [
       {
@@ -30,6 +32,17 @@ export function createSeedDatabase() {
         phone: '08110000002',
         createdAt: '2024-01-15T00:00:00.000Z',
       },
+      // ── BARU: Akun Bendahara ──────────────────────────────────────
+      {
+        id: 'u-bendahara',
+        email: 'bendahara@koperasi.dev',
+        password: 'bendahara123',
+        role: 'bendahara',
+        name: 'Dewi Kurniawati',
+        phone: '08110000003',
+        createdAt: '2024-01-15T00:00:00.000Z',
+      },
+      // ─────────────────────────────────────────────────────────────
       {
         id: 'u-budi',
         email: 'budi@koperasi.dev',
@@ -65,7 +78,7 @@ export function createSeedDatabase() {
       {
         id: 'm-001',
         userId: 'u-budi',
-        memberNumber: 'KOP-2024-001',
+        memberNumber: 'KTA-2024-001',
         nik: '3201010101010001',
         address: 'Jl. Melati No. 12, Jakarta Selatan',
         joinDate: '2024-03-10',
@@ -76,7 +89,7 @@ export function createSeedDatabase() {
       {
         id: 'm-002',
         userId: 'u-siti',
-        memberNumber: 'KOP-2024-002',
+        memberNumber: 'KTA-2024-002',
         nik: '3201010202020002',
         address: 'Jl. Kenanga No. 5, Depok',
         joinDate: '2024-04-20',
@@ -87,7 +100,7 @@ export function createSeedDatabase() {
       {
         id: 'm-003',
         userId: 'u-agus',
-        memberNumber: 'KOP-2024-003',
+        memberNumber: 'KTA-2024-003',
         nik: '3201010303030003',
         address: 'Jl. Mawar No. 8, Tangerang',
         joinDate: '2024-06-01',
@@ -135,6 +148,50 @@ export function createSeedDatabase() {
         approvedBy: 'u-admin',
       },
     ],
+    // ── BARU: Riwayat Pembayaran Cicilan ──────────────────────────────────────
+    loanPayments: [
+      {
+        id: 'pay-001',
+        loanId: 'ln-001',
+        amount: 705000,
+        date: '2024-06-01',
+        description: 'Pembayaran cicilan bulan Juni',
+        remainingAfter: 14295000,
+      },
+      {
+        id: 'pay-002',
+        loanId: 'ln-001',
+        amount: 705000,
+        date: '2024-07-01',
+        description: 'Pembayaran cicilan bulan Juli',
+        remainingAfter: 13590000,
+      },
+      {
+        id: 'pay-003',
+        loanId: 'ln-002',
+        amount: 458000,
+        date: '2024-07-15',
+        description: 'Pembayaran cicilan bulan Juli',
+        remainingAfter: 4542000,
+      },
+      {
+        id: 'pay-004',
+        loanId: 'ln-001',
+        amount: 705000,
+        date: '2024-08-01',
+        description: 'Pembayaran cicilan bulan Agustus',
+        remainingAfter: 12885000,
+      },
+      {
+        id: 'pay-005',
+        loanId: 'ln-002',
+        amount: 458000,
+        date: '2024-08-15',
+        description: 'Pembayaran cicilan bulan Agustus',
+        remainingAfter: 4084000,
+      },
+    ],
+    // ─────────────────────────────────────────────────────────────────────────
     loanApplications: [
       {
         id: 'la-001',
