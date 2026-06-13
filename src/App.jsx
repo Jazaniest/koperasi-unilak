@@ -14,8 +14,8 @@ import { BendaharaApplicationsPage } from './pages/bendahara/BendaharaApplicatio
 import { BendaharaMembersPage } from './pages/bendahara/BendaharaMembersPage'
 import { BendaharaMemberDetailPage } from './pages/bendahara/BendaharaMemberDetailPage'
 // ─────────────────────────────────────────────────────────────────────────────
-import { SuperDashboard } from './pages/super/SuperDashboard'
-import { SuperDatabasePage } from './pages/super/SuperDatabasePage'
+// import { SuperDashboard } from './pages/super/SuperDashboard'
+// import { SuperDatabasePage } from './pages/super/SuperDatabasePage'
 import { LandingPage } from './pages/LandingPage'
 import { StrukturPengurusPage } from './pages/StrukturPengurusPage'
 import { VisiMisiPage } from './pages/VisiMisiPage'
@@ -129,7 +129,7 @@ export default function App() {
       <Route path="/bendahara/laporan"    element={...} />
       */}
 
-      {/* ── Super Admin ── */}
+      {/* ── Super Admin ──
       <Route
         path="/super"
         element={
@@ -145,7 +145,7 @@ export default function App() {
             <SuperDatabasePage />
           </ProtectedRoute>
         }
-      />
+      /> */}
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
