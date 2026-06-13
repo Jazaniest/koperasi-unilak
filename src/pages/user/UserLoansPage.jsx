@@ -2,17 +2,10 @@ import { useAuth } from '../../context/AuthContext'
 import { DashboardLayout } from '../../components/layout/DashboardLayout'
 import { Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
-import { IconHome, IconWallet, IconLoan, IconFile } from '../../components/ui/Icons'
 import { getMemberByUserId } from '../../services/memberService'
 import { getMemberLoans } from '../../services/loanService'
 import { formatCurrency, formatDate } from '../../utils/format'
-
-const nav = [
-  { to: '/app', label: 'Beranda', icon: IconHome, end: true },
-  { to: '/app/simpanan', label: 'Simpanan', icon: IconWallet },
-  { to: '/app/pinjaman', label: 'Pinjaman', icon: IconLoan },
-  { to: '/app/pengajuan', label: 'Ajukan Pinjaman', icon: IconFile },
-]
+import { UserNavbar } from '../../components/user/UserNavbar'
 
 export function UserLoansPage() {
   const { user } = useAuth()
@@ -20,7 +13,7 @@ export function UserLoansPage() {
   const loans = member ? getMemberLoans(member.id) : []
 
   return (
-    <DashboardLayout title="Pinjaman Saya" subtitle="Daftar pinjaman dan cicilan" navItems={nav}>
+    <DashboardLayout title="Pinjaman Saya" subtitle="Daftar pinjaman dan cicilan" navItems={UserNavbar}>
       {loans.length === 0 ? (
         <Card className="py-16 text-center">
           <p className="text-sm leading-relaxed text-text-muted">Anda belum memiliki pinjaman</p>

@@ -4,18 +4,12 @@ import { DashboardLayout } from '../../components/layout/DashboardLayout'
 import { StatCard, Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
-import { IconHome, IconWallet, IconLoan, IconFile } from '../../components/ui/Icons'
+import { IconWallet, IconLoan, IconFile } from '../../components/ui/Icons'
 import { getMemberByUserId } from '../../services/memberService'
 import { getMemberSavings } from '../../services/savingsService'
 import { getMemberLoans, getLoanApplications } from '../../services/loanService'
 import { formatCurrency, formatDate } from '../../utils/format'
-
-const nav = [
-  { to: '/app', label: 'Beranda', icon: IconHome, end: true },
-  { to: '/app/simpanan', label: 'Simpanan', icon: IconWallet },
-  { to: '/app/pinjaman', label: 'Pinjaman', icon: IconLoan },
-  { to: '/app/pengajuan', label: 'Ajukan Pinjaman', icon: IconFile },
-]
+import { UserNavbar } from '../../components/user/UserNavbar'
 
 export function UserDashboard() {
   const { user } = useAuth()
@@ -31,7 +25,7 @@ export function UserDashboard() {
     <DashboardLayout
       title={`Halo, ${user.name.split(' ')[0]}`}
       subtitle={member ? `No. Anggota: ${member.memberNumber}` : 'Profil anggota'}
-      navItems={nav}
+      navItems={UserNavbar}
     >
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         <StatCard

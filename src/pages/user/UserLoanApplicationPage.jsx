@@ -5,17 +5,10 @@ import { Card } from '../../components/ui/Card'
 import { Input, Textarea, Select } from '../../components/ui/Input'
 import { Button } from '../../components/ui/Button'
 import { Badge } from '../../components/ui/Badge'
-import { IconHome, IconWallet, IconLoan, IconFile } from '../../components/ui/Icons'
 import { getMemberByUserId } from '../../services/memberService'
 import { submitLoanApplication, getLoanApplications } from '../../services/loanService'
 import { formatCurrency, formatDateTime } from '../../utils/format'
-
-const nav = [
-  { to: '/app', label: 'Beranda', icon: IconHome, end: true },
-  { to: '/app/simpanan', label: 'Simpanan', icon: IconWallet },
-  { to: '/app/pinjaman', label: 'Pinjaman', icon: IconLoan },
-  { to: '/app/pengajuan', label: 'Ajukan Pinjaman', icon: IconFile },
-]
+import { UserNavbar } from '../../components/user/UserNavbar'
 
 export function UserLoanApplicationPage() {
   const { user } = useAuth()
@@ -58,7 +51,7 @@ export function UserLoanApplicationPage() {
     <DashboardLayout
       title="Pengajuan Pinjaman"
       subtitle="Formulir akan diteruskan ke admin untuk persetujuan"
-      navItems={nav}
+      navItems={UserNavbar}
     >
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
@@ -94,10 +87,11 @@ export function UserLoanApplicationPage() {
               ]}
             />
             <Input
-              label="Jaminan / agunan"
-              value={form.collateral}
-              onChange={(e) => setForm({ ...form, collateral: e.target.value })}
-              placeholder="BPKB, sertifikat, atau tidak ada"
+              label="Jaminan / agunan (Upload Dokumen) *opsional"
+              type="file"
+              // value sengaja dihilangkan untuk input file
+              onChange={(e) => setForm({ ...form, collateral: e.target.files[0] })}
+              placeholder="Pilih file BPKB atau sertifikat"
             />
             {error && (
               <p className="rounded-xl border border-danger/20 bg-danger/5 px-4 py-2.5 text-sm text-danger">
