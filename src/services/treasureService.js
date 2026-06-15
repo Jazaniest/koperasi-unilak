@@ -101,3 +101,19 @@ export async function getAllLoansWithMembers(filters = {}) {
     const res = await apiRequest(`/loans${query}`)
     return res.data
 }
+
+/**
+ * GET /api/treasurer/history?year=2026&month=3
+ */
+export async function getTransactionHistory(year, month) {
+    const res = await apiRequest(`/treasurer/history?year=${year}&month=${month}`)
+    return res.data
+}
+
+/**
+ * GET /api/treasurer/report/yearly?year=2026
+ */
+export async function getYearlyReport(year) {
+    const res = await apiRequest(`/treasurer/report/yearly?year=${year}`)
+    return res.data
+}
