@@ -59,7 +59,7 @@ export function BendaharaApplicationsPage() {
     })
 
     useEffect(() => {
-        getLoanApplications(filter === 'all' ? {} : { status: filter }).then(setApps)
+        getLoanApplications(filter === 'all' ? { type: 'regular' } : { status: filter, type: 'regular' }).then(setApps)
     }, [filter, refreshKey])
 
     const selected = apps.find((a) => a.id === selectedId) ?? apps[0]
