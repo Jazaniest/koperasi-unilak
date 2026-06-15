@@ -10,12 +10,15 @@ import { AdminDashboard } from './pages/admin/AdminDashboard'
 import { AdminMembersPage } from './pages/admin/AdminMembersPage'
 import { AdminMemberDetailPage } from './pages/admin/AdminMemberDetailPage'
 import { AdminRegistrationsPage } from './pages/admin/AdminRegistrationsPage'
+import { AdminNewsPage } from './pages/admin/AdminNewsPage'
 // ── BARU: Bendahara ───────────────────────────────────────────────────────────
 import { BendaharaDashboard } from './pages/bendahara/BendaharaDashboard'
 import { BendaharaApplicationsPage } from './pages/bendahara/BendaharaApplicationsPage'
 import { BendaharaMembersPage } from './pages/bendahara/BendaharaMembersPage'
 import { BendaharaMemberDetailPage } from './pages/bendahara/BendaharaMemberDetailPage'
 import { BendaharaResignationsPage } from './pages/bendahara/BendaharaResignationsPage'
+import { BendaharaLoansPage } from './pages/bendahara/BendaharaLoansPage'
+import { BendaharaHistoryPage } from './pages/bendahara/BendaharaHistoryPage'
 // ─────────────────────────────────────────────────────────────────────────────
 // import { SuperDashboard } from './pages/super/SuperDashboard'
 // import { SuperDatabasePage } from './pages/super/SuperDatabasePage'
@@ -23,6 +26,9 @@ import { LandingPage } from './pages/LandingPage'
 import { StrukturPengurusPage } from './pages/StrukturPengurusPage'
 import { VisiMisiPage } from './pages/VisiMisiPage'
 import { SimulasiPinjamanPage } from './pages/SimulasiPinjamanPage'
+
+import { UserTopUpPage } from './pages/user/UserTopUpPage'
+import { BendaharaTopUpPage } from './pages/bendahara/BendaharaTopUpPage'
 
 export default function App() {
   return (
@@ -67,6 +73,14 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/app/topup"
+        element={
+          <ProtectedRoute roles={['user']}>
+            <UserTopUpPage />
+          </ProtectedRoute>
+        }
+      />
 
       {/* ── Admin ── */}
       <Route
@@ -98,6 +112,14 @@ export default function App() {
         element={
           <ProtectedRoute roles={['admin']}>
             <AdminRegistrationsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/berita"
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <AdminNewsPage />
           </ProtectedRoute>
         }
       />
@@ -140,6 +162,30 @@ export default function App() {
         element={
           <ProtectedRoute roles={['bendahara']}>
             <BendaharaResignationsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/bendahara/topup"
+        element={
+          <ProtectedRoute roles={['bendahara']}>
+            <BendaharaTopUpPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/bendahara/pinjaman"
+        element={
+          <ProtectedRoute roles={['bendahara']}>
+            <BendaharaLoansPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/bendahara/riwayat"
+        element={
+          <ProtectedRoute roles={['bendahara']}>
+            <BendaharaHistoryPage />
           </ProtectedRoute>
         }
       />
