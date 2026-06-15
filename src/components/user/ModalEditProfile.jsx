@@ -57,20 +57,18 @@ export function ModalEditProfil({ open, user, onClose, onSuccess }) {
         setError('')
         setLoading(true)
         try {
-            await apiRequest('/auth/me/profile', {
+            const res = await apiRequest('/auth/me/profile', {
                 method: 'PUT',
                 body: JSON.stringify({
-                    // user fields
                     name: form.name,
                     phone: form.phone,
-                    // member fields
                     nik: form.nik,
                     birth_place_and_date: form.birth_place_and_date,
                     address: form.address,
                     occupation: form.occupation,
                 }),
             })
-            onSuccess?.()
+            onSuccess?.(res.data)  // ← teruskan data terbaru ke parent
             onClose()
         } catch (err) {
             setError(err.message ?? 'Gagal menyimpan perubahan.')
