@@ -74,7 +74,7 @@ export function UserDashboard() {
         <StatCard
           title="Total Simpanan"
           value={formatCurrency(savings?.total ?? 0)}
-          subtitle="Pokok + wajib + sukarela"
+          subtitle="Wajib + sukarela"
           icon={IconWallet}
           accent="primary"
         />
@@ -95,7 +95,7 @@ export function UserDashboard() {
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <Card>
+        {/* <Card>
           <div className="flex items-center justify-between gap-4">
             <h3 className="font-medium text-text-primary">Ringkasan Simpanan</h3>
             <Link to="/app/simpanan" className="ds-link">
@@ -112,7 +112,7 @@ export function UserDashboard() {
               ))}
             </div>
           )}
-        </Card>
+        </Card> */}
 
         <Card>
           <div className="flex items-center justify-between gap-4">
