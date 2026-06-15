@@ -67,3 +67,13 @@ export async function changePassword(userId, oldPassword, newPassword) {
     return { success: false, error: err.message }
   }
 }
+
+/**
+ * Update sebagian data user di session storage.
+ * Dipakai setelah update profil agar nama/phone terupdate tanpa re-login.
+ */
+export function updateSession(updatedUser) {
+    const session = getSession()
+    if (!session) return
+    setSession({ ...session, user: { ...session.user, ...updatedUser } })
+}
