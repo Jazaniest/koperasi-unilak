@@ -9,6 +9,8 @@ import { getMemberByUserId } from '../../services/memberService'
 import { submitLoanApplication, getLoanApplications } from '../../services/loanApplicationService'
 import { formatCurrency, formatDateTime } from '../../utils/format'
 import { UserNavbar } from '../../components/user/UserNavbar'
+import { useNavigate } from 'react-router-dom'
+import { getMemberLoans } from '../../services/loanService'
 
 export function UserLoanApplicationPage() {
   const { user } = useAuth()
@@ -27,8 +29,20 @@ export function UserLoanApplicationPage() {
   const [applications, setApplications] = useState([])
   const fileInputRef = useRef(null)
 
+  const navigate = useNavigate()
+  const [activeLoan, setActiveLoan] = useState(null)
+  const [checkingLoan, setCheckingLoan] = useState(true)
+
   useEffect(() => {
-    getMemberByUserId(user.id).then(setMember)
+    getMemberByUserId(user.id).then(async (m) => {
+      setMember(m)
+      if (m) {
+        const loans = await getMemberLoans(m.id)
+        const active = loans.find((l) => l.status === 'active') ?? null
+        setActiveLoan(active)
+      }
+      setCheckingLoan(false)
+    })
   }, [user.id])
 
   useEffect(() => {
@@ -101,6 +115,32 @@ export function UserLoanApplicationPage() {
     } else {
       setError(result.error)
     }
+  }
+
+  // Redirect ke halaman top up jika ada pinjaman aktif
+  if (!checkingLoan && activeLoan) {
+    return (
+      <DashboardLayout
+        title="Pengajuan Pinjaman"
+        subtitle="Formulir akan diteruskan ke admin untuk persetujuan"
+        navItems={UserNavbar}
+      >
+        <Card className="max-w-lg mx-auto text-center py-10">
+          <div className="text-4xl mb-4">🔄</div>
+          <h3 className="font-semibold text-text-primary text-lg mb-2">Anda Memiliki Pinjaman Aktif</h3>
+          <p className="text-sm text-text-muted mb-1">
+            Sisa pinjaman: <span className="font-semibold text-primary">{formatCurrency(activeLoan.remaining)}</span>
+          </p>
+          <p className="text-sm text-text-muted mb-6 leading-relaxed">
+            Tidak bisa mengajukan pinjaman baru selama masih ada pinjaman berjalan.
+            Gunakan fitur <strong>Top Up</strong> untuk menambah pinjaman.
+          </p>
+          <Button onClick={() => navigate('/app/topup')} className="mx-auto">
+            Ajukan Top Up Pinjaman →
+          </Button>
+        </Card>
+      </DashboardLayout>
+    )
   }
 
   return (
