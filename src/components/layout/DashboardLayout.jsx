@@ -6,6 +6,7 @@ import { ROLE_LABELS } from '../../utils/format'
 import { Button } from '../ui/Button'
 import { ModalEditProfil } from '../user/ModalEditProfile'
 import { ModalUbahPassword } from '../user/ModalUbahPassword'
+import * as authService from '../../services/authService'
 
 export function DashboardLayout({ title, subtitle, navItems, children }) {
   const { user, logout, refresh } = useAuth()
@@ -21,8 +22,12 @@ export function DashboardLayout({ title, subtitle, navItems, children }) {
   }
 
   // Setelah simpan profil → refresh user di context agar nama terupdate
-  const handleProfilSuccess = () => {
-    refresh()
+  // Ganti handleProfilSuccess
+  const handleProfilSuccess = (updatedUser) => {
+    if (updatedUser) {
+      authService.updateSession(updatedUser)  // ← update session storage
+    }
+    refresh()  // ← baru refresh state dari session
   }
 
   const initials = user?.name
