@@ -32,6 +32,15 @@ export async function getLoanDetail(loanId) {
 }
 
 /**
+ * GET /api/loans/:id/installments
+ */
+export async function getLoanInstallments(loanId) {
+  const res = await apiRequest(`/loans/${loanId}/installments`);
+  return res.data;
+}
+
+
+/**
  * GET /api/loans/:id/payments
  */
 export async function getLoanPayments(loanId) {
