@@ -1,4 +1,4 @@
-import { apiRequest, getApiBaseUrl } from './api'
+import { apiRequest } from './api'
 
 // ── Public ────────────────────────────────────────────────────────────────────
 
@@ -33,7 +33,7 @@ export async function createNews(payload) {
     // payload: { title, excerpt, content, thumbnail_url, is_published }
     const res = await apiRequest('/news', {
         method: 'POST',
-        body: JSON.stringify(payload),
+        body: payload, // axios akan otomatis stringify
     })
     return res.data
 }
@@ -42,7 +42,7 @@ export async function createNews(payload) {
 export async function updateNews(id, payload) {
     const res = await apiRequest(`/news/${id}`, {
         method: 'PUT',
-        body: JSON.stringify(payload),
+        body: payload, // axios akan otomatis stringify
     })
     return res.data
 }
@@ -70,5 +70,7 @@ export async function uploadThumbnail(file) {
 export function buildImageUrl(path) {
     if (!path) return null
     if (path.startsWith('http')) return path
-    return `${getApiBaseUrl().replace('/api', '')}${path}`
+    // Dapatkan base URL dari environment variable, hapus '/api' di akhir
+    const baseUrl = import.meta.env.VITE_API_URL.replace('/api', '')
+    return `${baseUrl}${path}`
 }

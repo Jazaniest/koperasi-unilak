@@ -1,6 +1,10 @@
 // src/services/api.js
+import axios from 'axios'
+import { setSession } from '../lib/storage'
 
-const BASE_URL = import.meta.env.VITE_API_URL
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+})
 
 function getToken() {
   try {
@@ -12,39 +16,61 @@ function getToken() {
   }
 }
 
+// Interceptor untuk inject token ke setiap request
+api.interceptors.request.use(
+  (config) => {
+    const token = getToken()
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    // Jika method bukan GET, set Content-Type ke application/json
+    // kecuali jika body adalah FormData
+    if (config.method?.toUpperCase() !== 'GET' && !(config.data instanceof FormData)) {
+        config.headers['Content-Type'] = 'application/json'
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
+// Interceptor untuk handle response
+api.interceptors.response.use(
+  (response) => {
+    // Backend kita selalu bungkus di `data`, jadi kita buka di sini
+    return response.data
+  },
+  (error) => {
+    // Jika token kadaluarsa (401), otomatis logout
+    if (error.response?.status === 401) {
+      // Hanya lakukan jika bukan dari halaman login, untuk menghindari loop
+      if (window.location.pathname !== '/login') {
+        setSession(null) // Hapus sesi dari storage
+        window.location.href = '/login' // Arahkan ke halaman login
+      }
+    }
+
+    // Buat error lebih konsisten dengan yang lama
+    const err = new Error(error.response?.data?.message || error.message || 'Request gagal')
+    err.status = error.response?.status
+    err.data = error.response?.data
+    return Promise.reject(err)
+  }
+)
+
 /**
- * Wrapper fetch ke backend.
- * Otomatis inject Authorization header jika ada token.
- * Melempar Error jika response tidak ok.
+ * Wrapper Axios ke backend.
  */
-export async function apiRequest(path, options = {}) {
-  const token = getToken()
+export const apiRequest = async (path, options = {}) => {
+  const { method = 'GET', body, ...restOptions } = options
 
-  const isFormData = options.body instanceof FormData
-
-  const headers = {
-    ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    ...options.headers,
+  const config = {
+    method,
+    url: path,
+    data: body,
+    ...restOptions,
   }
 
-  const res = await fetch(`${BASE_URL}${path}`, {
-    ...options,
-    headers,
-  })
-
-  const data = await res.json()
-
-  if (!res.ok) {
-    const err = new Error(data.message || 'Request gagal')
-    err.status = res.status
-    err.data = data
-    throw err
-  }
-
-  return data // { success: true, data: ..., message: ... }
-}
-
-export function getApiBaseUrl() {
-  return BASE_URL
+  return api(config)
 }
