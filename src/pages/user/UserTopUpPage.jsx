@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { DashboardLayout } from '../../components/layout/DashboardLayout'
 import { Card } from '../../components/ui/Card'
-import { Input, Textarea } from '../../components/ui/Input'
+import { Input, Textarea, Select } from '../../components/ui/Input'
 import { Button } from '../../components/ui/Button'
 import { Badge } from '../../components/ui/Badge'
 import { getMemberByUserId } from '../../services/memberService'
@@ -11,6 +11,9 @@ import { getMemberLoans } from '../../services/loanService'
 import { submitTopUpApplication, getTopUpApplications } from '../../services/loanApplicationService'
 import { formatCurrency, formatDateTime } from '../../utils/format'
 import { UserNavbar } from '../../components/user/UserNavbar'
+import { CheckCircleIcon } from '@heroicons/react/24/outline'
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
+import { BankAccountField } from '../../components/user/BankAccountField'
 
 export function UserTopUpPage() {
     const { user } = useAuth()
@@ -27,6 +30,7 @@ export function UserTopUpPage() {
         purpose: '',
         tenorMonths: '12',
         collateral: '',
+        paymentMethod: 'transfer', // ← tambahan
     })
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
@@ -51,13 +55,13 @@ export function UserTopUpPage() {
     if (!checkingLoan && !activeLoan) {
         return (
             <DashboardLayout title="Top Up Pinjaman" subtitle="Tambah pinjaman di atas pinjaman berjalan" navItems={UserNavbar}>
-                <Card className="max-w-lg mx-auto text-center py-10">
-                    <div className="text-4xl mb-4">✅</div>
+                <Card className="max-w-lg mx-auto text-center py-8 sm:py-10">
+                    <CheckCircleIcon className="mx-auto mb-4 h-12 w-12 text-success" />
                     <h3 className="font-semibold text-text-primary text-lg mb-2">Tidak Ada Pinjaman Aktif</h3>
                     <p className="text-sm text-text-muted mb-6">
                         Anda tidak memiliki pinjaman yang sedang berjalan. Gunakan pengajuan pinjaman baru.
                     </p>
-                    <Button onClick={() => navigate('/app/pengajuan')} className="mx-auto">
+                    <Button onClick={() => navigate('/app/pengajuan')} className="w-full sm:w-auto sm:mx-auto">
                         Ajukan Pinjaman Baru →
                     </Button>
                 </Card>
@@ -104,12 +108,18 @@ export function UserTopUpPage() {
             return
         }
 
+        if (form.paymentMethod === 'transfer' && (!member.bankName || !member.bankAccountNumber)) {
+            setError('Lengkapi rekening bank Anda terlebih dahulu untuk pembayaran via transfer')
+            return
+        }
+
         setLoading(true)
         const result = await submitTopUpApplication({
             amount: rawAmount,
             purpose: form.purpose,
             tenorMonths: tenor,
             collateral: form.collateral,
+            paymentMethod: form.paymentMethod, // ← tambahan
         })
         setLoading(false)
 
@@ -142,17 +152,17 @@ export function UserTopUpPage() {
             subtitle="Tambah pinjaman di atas pinjaman berjalan"
             navItems={UserNavbar}
         >
-            <div className="grid gap-6 lg:grid-cols-2">
+            <div className="grid gap-5 sm:gap-6 lg:grid-cols-2">
                 {/* Kiri: Info pinjaman aktif + form */}
-                <div className="space-y-6">
+                <div className="space-y-5 sm:space-y-6">
 
                     {/* Info pinjaman aktif */}
                     {activeLoan && (
                         <Card>
                             <h3 className="font-medium text-text-primary mb-4">Pinjaman Aktif Saat Ini</h3>
                             <dl className="space-y-3 text-sm">
-                                <div className="flex justify-between">
-                                    <dt className="text-text-muted">Jumlah awal</dt>
+                                <div className="flex flex-wrap justify-between gap-x-3 gap-y-1">
+                                    <dt className="text-text-muted">Jumlah top up (Rp)</dt>
                                     <dd className="font-medium text-text-primary">{formatCurrency(activeLoan.amount)}</dd>
                                 </div>
                                 <div className="flex justify-between">
@@ -168,8 +178,9 @@ export function UserTopUpPage() {
                                     <dd className="text-text-primary">{formatCurrency(activeLoan.monthlyPayment)}</dd>
                                 </div>
                             </dl>
-                            <p className="mt-4 rounded-xl bg-warning/10 border border-warning/20 px-3 py-2.5 text-xs text-warning leading-relaxed">
-                                ⚠️ Pinjaman lama akan <strong>dilunasi otomatis</strong> dan digantikan pinjaman baru setelah top up disetujui.
+                            <p className="mt-4 flex items-start gap-2 rounded-xl bg-warning/10 border border-warning/20 px-3 py-2.5 text-xs text-warning leading-relaxed">
+                                <ExclamationTriangleIcon className="h-4 w-4 shrink-0 mt-0.5" />
+                                <span>Pinjaman lama akan <strong>dilunasi otomatis</strong> dan digantikan pinjaman baru setelah top up disetujui.</span>
                             </p>
                         </Card>
                     )}
@@ -177,13 +188,19 @@ export function UserTopUpPage() {
                     {/* Form top up */}
                     <Card>
                         <h3 className="font-medium text-text-primary">Formulir Top Up</h3>
-                        <form onSubmit={handleSubmit} className="mt-5 space-y-5">
+
+                        <div className="mt-5">
+                            <BankAccountField member={member} onUpdated={(updated) => setMember((m) => ({ ...m, ...updated }))} />
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="mt-5 space-y-4 sm:space-y-5">
                             <Input
-                                label={`Jumlah top up (Rp) — min. lebih dari ${formatCurrency(activeLoan?.remaining ?? 0)}`}
+                                label="Jumlah top up (Rp)"
                                 type="text"
                                 value={form.amount}
                                 onChange={handleAmountChange}
                                 placeholder={activeLoan ? String(Number(activeLoan.remaining) + 1000000).replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '0'}
+                                helperText={`Minimal lebih dari ${formatCurrency(activeLoan?.remaining ?? 0)}`}
                                 required
                             />
                             <Textarea
@@ -200,6 +217,15 @@ export function UserTopUpPage() {
                                 onChange={(e) => setForm({ ...form, tenorMonths: e.target.value })}
                                 placeholder="Minimal 12"
                                 required
+                            />
+                            <Select
+                                label="Metode Pembayaran"
+                                value={form.paymentMethod}
+                                onChange={(e) => setForm({ ...form, paymentMethod: e.target.value })}
+                                options={[
+                                    { value: 'transfer', label: 'Transfer Bank' },
+                                    { value: 'tunai', label: 'Tunai' },
+                                ]}
                             />
                             <Input
                                 label="Jaminan / agunan (Upload Dokumen) *opsional"
@@ -227,7 +253,7 @@ export function UserTopUpPage() {
                 </div>
 
                 {/* Kanan: Simulasi + riwayat */}
-                <div className="space-y-6">
+                <div className="space-y-5 sm:space-y-6">
 
                     {/* Simulasi */}
                     <Card>
@@ -265,16 +291,17 @@ export function UserTopUpPage() {
                             <ul className="mt-5 space-y-4">
                                 {applications.map((app) => (
                                     <li key={app.id} className="rounded-xl border border-gray-100 bg-surface p-4">
-                                        <div className="flex justify-between gap-2">
+                                        <div className="flex flex-wrap items-start justify-between gap-2">
                                             <span className="font-medium text-text-primary">{formatCurrency(app.amount)}</span>
-                                            <Badge status={app.status} />
+                                            <Badge status={app.status} className="shrink-0" />
                                         </div>
                                         <p className="mt-1 text-sm text-text-muted">{app.purpose}</p>
                                         <p className="mt-1 text-xs text-text-muted font-medium">Tenor: {app.tenorMonths} Bulan</p>
                                         <p className="mt-2 text-xs text-text-muted">{formatDateTime(app.createdAt)}</p>
                                         {app.adminNotes && (
                                             <p className="mt-3 rounded-lg border border-gray-100 bg-surface-card p-3 text-xs leading-relaxed text-text-muted">
-                                                <span className="font-medium text-text-primary">Catatan:</span> {app.adminNotes}
+                                                <span className="block font-medium text-text-primary">Catatan:</span>
+                                                {app.adminNotes}
                                             </p>
                                         )}
                                     </li>

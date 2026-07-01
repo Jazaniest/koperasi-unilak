@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { DEMO_CREDENTIALS } from '../data/seed'
 import { IconLogo } from '../components/ui/Icons'
 import { Input } from '../components/ui/Input'
 import { Button } from '../components/ui/Button'
@@ -38,12 +37,6 @@ export function LoginPage() {
     } else {
       setError(result.error)
     }
-  }
-
-  const fillDemo = (cred) => {
-    setEmail(cred.email)
-    setPassword(cred.password)
-    setError('')
   }
 
   return (
@@ -104,25 +97,6 @@ export function LoginPage() {
               </Link>
             </p>
           </form>
-
-          <div className="mt-8 border-t border-gray-100 pt-6">
-            <p className="mb-4 text-xs font-medium uppercase tracking-wider text-text-muted">
-              Akun demo
-            </p>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {DEMO_CREDENTIALS.map((cred) => (
-                <button
-                  key={cred.email}
-                  type="button"
-                  onClick={() => fillDemo(cred)}
-                  className="rounded-xl border border-gray-100 bg-surface px-4 py-3 text-left text-sm transition hover:border-primary/20 hover:bg-primary/5"
-                >
-                  <span className="font-medium text-text-primary">{cred.label}</span>
-                  <span className="mt-0.5 block truncate text-xs text-text-muted">{cred.email}</span>
-                </button>
-              ))}
-            </div>
-          </div>
         </Card>
       </div>
     </div>

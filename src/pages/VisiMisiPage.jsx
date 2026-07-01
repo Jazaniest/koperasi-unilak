@@ -1,117 +1,156 @@
 import { Navbar } from '../components/layout/Navbar'
 import { Footer } from '../components/layout/Footer'
-import { Card } from '../components/ui/Card'
-import { IconWallet, IconUsers, IconFile } from '../components/ui/Icons'
+import {
+    EyeIcon,
+    RocketLaunchIcon,
+    ScaleIcon,
+    BookOpenIcon,
+    StarIcon,
+    UserGroupIcon,
+    HeartIcon,
+    SparklesIcon,
+} from '@heroicons/react/24/outline'
 
-const visi = `Menjadi koperasi simpan pinjam yang terpercaya, modern, dan berdaya saing
-tinggi dalam melayani kebutuhan keuangan seluruh sivitas akademika
-Universitas Lancang Kuning secara transparan dan profesional.`
+// ─── DATA ────────────────────────────────────────────────────────────
+const visi = `Menjadikan Koperasi Karyawan dan Dosen Universitas Lancang Kuning sebagai
+Badan Usaha Koperasi yang dipercaya oleh anggota-anggotanya, mitra kerja,
+dan masyarakat yang berinteraksi dengannya.`
 
-const misi = [
-    'Memberikan layanan simpan pinjam yang mudah, cepat, dan terjangkau bagi seluruh anggota.',
-    'Mengelola keuangan koperasi secara transparan, akuntabel, dan sesuai prinsip koperasi.',
-    'Meningkatkan kesejahteraan anggota melalui program simpanan dan pembiayaan yang kompetitif.',
-    'Mengembangkan sistem manajemen digital yang memudahkan anggota mengakses layanan kapan saja.',
-    'Membangun sumber daya manusia pengurus yang profesional, berintegritas, dan berkomitmen.',
-    'Mendorong partisipasi aktif anggota dalam pengembangan dan pengawasan koperasi.',
-]
+const misi = `Meningkatkan kesejahteraan anggota melalui pengembangan dan pemantapan
+usaha/bisnis secara profesional dengan mengikutsertakan potensi ekonomi
+anggota, mitra usaha, dan atau masyarakat.`
 
 const nilaiUtama = [
     {
-        icon: IconUsers,
-        title: 'Kekeluargaan',
-        desc: 'Membangun hubungan yang harmonis antara pengurus dan anggota berdasarkan asas kekeluargaan dan gotong royong.',
+        icon: ScaleIcon,
+        title: 'Pancasila & UUD 1945',
+        desc: 'Seluruh kegiatan koperasi berlandaskan Pancasila dan Undang-Undang Dasar 1945 sebagai fondasi utama.',
     },
     {
-        icon: IconWallet,
-        title: 'Amanah',
-        desc: 'Mengelola setiap titipan dan kepercayaan anggota dengan penuh tanggung jawab dan kejujuran.',
+        icon: BookOpenIcon,
+        title: 'Kepatuhan Hukum',
+        desc: 'Mematuhi Undang-Undang Perkoperasian dan seluruh peraturan pemerintah yang berlaku dan terkait.',
     },
     {
-        icon: IconFile,
-        title: 'Transparansi',
-        desc: 'Menyajikan laporan keuangan dan operasional secara terbuka agar dapat diawasi oleh seluruh anggota.',
+        icon: StarIcon,
+        title: 'Integritas & Profesionalisme',
+        desc: 'Menjunjung tinggi nilai integritas, kejujuran, etika bisnis, dan profesionalisme dalam setiap tindakan.',
+    },
+    {
+        icon: UserGroupIcon,
+        title: 'Anggota sebagai Utama',
+        desc: 'Menempatkan anggota sebagai potensi utama koperasi yang menjadi pusat dari setiap kebijakan dan layanan.',
+    },
+    {
+        icon: HeartIcon,
+        title: 'Peduli Lingkungan',
+        desc: 'Peduli terhadap masyarakat dan lingkungan sekitar sebagai wujud tanggung jawab sosial koperasi.',
     },
 ]
 
+const moto = 'Dari Anggota, Untuk Anggota dan Kesejahteraan Anggota'
+
+// ─── NILAI CARD ──────────────────────────────────────────────────────
+const NilaiCard = ({ icon: Icon, title, desc }) => (
+    <div className="bg-surface-card border border-border rounded-2xl p-5 flex items-start gap-4 shadow-sm hover:shadow-md transition-all duration-300">
+        <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+            <Icon className="w-4.5 h-4.5 text-primary" />
+        </div>
+        <div>
+            <h3 className="text-sm font-semibold text-text-primary">{title}</h3>
+            <p className="mt-1 text-sm leading-relaxed text-text-muted">{desc}</p>
+        </div>
+    </div>
+)
+
+// ─── PAGE ────────────────────────────────────────────────────────────
 export function VisiMisiPage() {
     return (
-        <div className="min-h-screen bg-surface flex flex-col">
+        <div className="min-h-screen bg-surface flex flex-col text-text-primary font-sans">
             <Navbar />
 
-            {/* ── Header ──────────────────────────────────────────────── */}
-            <section className="border-b border-gray-100 bg-surface-card">
-                <div className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
-                    <span className="inline-block rounded-xl bg-primary/8 px-3 py-1 text-xs font-medium text-primary">
-                        Tentang Kami
-                    </span>
-                    <h1 className="mt-4 text-3xl font-medium text-text-primary sm:text-4xl">
-                        Visi &amp; Misi
-                    </h1>
-                    <p className="mt-3 max-w-xl text-base leading-relaxed text-text-muted">
-                        Landasan arah dan tujuan Koperasi Unilak dalam melayani sivitas akademika
-                        Universitas Lancang Kuning.
-                    </p>
-                </div>
-            </section>
+            {/* HEADER */}
+            <header className="bg-surface-card border-b border-border py-12 px-6 text-center shadow-sm">
+                <span className="inline-block rounded-full bg-primary/10 px-4 py-1 text-xs font-semibold text-primary uppercase tracking-widest">
+                    Tentang Kami
+                </span>
+                <h1 className="mt-3 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+                    Visi &amp; Misi
+                </h1>
+                <p className="mt-2 text-base text-text-muted max-w-xl mx-auto">
+                    Landasan arah dan tujuan Koperasi Karyawan dan Dosen Universitas Lancang Kuning
+                    dalam melayani seluruh anggotanya.
+                </p>
+            </header>
 
-            <div className="mx-auto w-full max-w-6xl px-6 py-10 sm:py-14 space-y-10">
+            <main className="flex-1 py-14 px-4 max-w-5xl mx-auto w-full">
 
-                {/* ── Visi ──────────────────────────────────────────────── */}
-                <div className="grid gap-6 lg:grid-cols-5">
-                    <div className="lg:col-span-1">
-                        <p className="text-xs font-medium uppercase tracking-wider text-text-muted pt-1">Visi</p>
-                    </div>
-                    <Card className="lg:col-span-4">
-                        <div className="flex gap-4">
-                            <div className="mt-1 h-1 w-8 shrink-0 rounded-full bg-primary" />
-                            <p className="text-base leading-relaxed text-text-primary">{visi}</p>
+                {/* ── VISI & MISI ──────────────────────────────────────── */}
+                <div className="grid lg:grid-cols-2 gap-6 mb-14">
+
+                    {/* Visi */}
+                    <div className="bg-surface-card border border-border rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300">
+                        <div className="flex items-center gap-3 mb-5">
+                            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                                <EyeIcon className="w-5 h-5 text-primary" />
+                            </div>
+                            <span className="text-[11px] font-bold uppercase tracking-widest text-primary bg-primary/10 px-3 py-0.5 rounded-full">
+                                Visi
+                            </span>
                         </div>
-                    </Card>
+                        <div className="flex gap-4">
+                            <div className="w-1 self-stretch rounded-full bg-primary/30 shrink-0" />
+                            <p className="text-sm leading-relaxed text-text-primary">{visi}</p>
+                        </div>
+                    </div>
+
+                    {/* Misi */}
+                    <div className="bg-surface-card border border-border rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300">
+                        <div className="flex items-center gap-3 mb-5">
+                            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                                <RocketLaunchIcon className="w-5 h-5 text-primary" />
+                            </div>
+                            <span className="text-[11px] font-bold uppercase tracking-widest text-primary bg-primary/10 px-3 py-0.5 rounded-full">
+                                Misi
+                            </span>
+                        </div>
+                        <div className="flex gap-4">
+                            <div className="w-1 self-stretch rounded-full bg-primary/30 shrink-0" />
+                            <p className="text-sm leading-relaxed text-text-primary">{misi}</p>
+                        </div>
+                    </div>
+
                 </div>
 
-                {/* ── Misi ──────────────────────────────────────────────── */}
-                <div className="grid gap-6 lg:grid-cols-5">
-                    <div className="lg:col-span-1">
-                        <p className="text-xs font-medium uppercase tracking-wider text-text-muted pt-1">Misi</p>
-                    </div>
-                    <Card className="lg:col-span-4">
-                        <ol className="space-y-4">
-                            {misi.map((item, i) => (
-                                <li key={i} className="flex gap-4">
-                                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-primary/8 text-xs font-medium text-primary">
-                                        {i + 1}
-                                    </span>
-                                    <p className="text-sm leading-relaxed text-text-primary pt-0.5">{item}</p>
-                                </li>
-                            ))}
-                        </ol>
-                    </Card>
-                </div>
-
-                {/* ── Nilai Utama ───────────────────────────────────────── */}
-                <div className="grid gap-6 lg:grid-cols-5">
-                    <div className="lg:col-span-1">
-                        <p className="text-xs font-medium uppercase tracking-wider text-text-muted pt-1">Nilai Utama</p>
-                    </div>
-                    <div className="lg:col-span-4 grid gap-5 sm:grid-cols-3">
+                {/* ── NILAI-NILAI ───────────────────────────────────────── */}
+                <div className="mb-14">
+                    <span className="inline-block text-[11px] font-bold uppercase tracking-widest text-primary bg-primary/10 px-3 py-0.5 rounded-full mb-6">
+                        Nilai-Nilai
+                    </span>
+                    <div className="grid sm:grid-cols-2 gap-4">
                         {nilaiUtama.map((n) => (
-                            <Card key={n.title} className="flex flex-col gap-4">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/8">
-                                    <n.icon className="h-5 w-5 text-primary" />
-                                </div>
-                                <div>
-                                    <h3 className="font-medium text-text-primary">{n.title}</h3>
-                                    <p className="mt-1.5 text-sm leading-relaxed text-text-muted">{n.desc}</p>
-                                </div>
-                            </Card>
+                            <NilaiCard key={n.title} {...n} />
                         ))}
                     </div>
                 </div>
 
-            </div>
+                {/* ── MOTO ─────────────────────────────────────────────── */}
+                <div>
+                    <span className="inline-block text-[11px] font-bold uppercase tracking-widest text-primary bg-primary/10 px-3 py-0.5 rounded-full mb-6">
+                        Moto
+                    </span>
+                    <div className="bg-primary/5 border border-primary/10 rounded-2xl p-8 flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
+                        <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+                            <SparklesIcon className="w-6 h-6 text-primary" />
+                        </div>
+                        <p className="text-lg font-bold text-primary tracking-wide leading-snug">
+                            "{moto}"
+                        </p>
+                    </div>
+                </div>
 
-            <div className="flex-1" />
+            </main>
+
             <Footer />
         </div>
     )

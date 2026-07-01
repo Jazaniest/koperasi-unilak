@@ -70,7 +70,7 @@ export function UserDashboard() {
       subtitle={member ? `No. Anggota: ${member.memberNumber}` : 'Profil anggota'}
       navItems={UserNavbar}
     >
-      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 xl:grid-cols-3">
         <StatCard
           title="Total Simpanan"
           value={formatCurrency(savings?.total ?? 0)}
@@ -128,8 +128,10 @@ export function UserDashboard() {
               {activeLoans.map((loan) => (
                 <li key={loan.id} className="rounded-xl border border-gray-100 bg-surface px-4 py-3">
                   <p className="font-medium text-text-primary">{loan.purpose}</p>
-                  <p className="mt-1 text-sm text-text-muted">
-                    Sisa: {formatCurrency(loan.remaining)} · Cicilan {formatCurrency(loan.monthlyPayment)}/bln
+                  <p className="mt-1 flex flex-col gap-0.5 text-sm text-text-muted sm:flex-row sm:items-center sm:gap-1">
+                    <span>Sisa: {formatCurrency(loan.remaining)}</span>
+                    <span className="hidden sm:inline">·</span>
+                    <span>Cicilan {formatCurrency(loan.monthlyPayment)}/bln</span>
                   </p>
                 </li>
               ))}
@@ -143,14 +145,14 @@ export function UserDashboard() {
           <h3 className="font-medium text-text-primary">Riwayat Pengajuan Terbaru</h3>
           <ul className="mt-5 divide-y divide-gray-100">
             {applications.slice(0, 3).map((app) => (
-              <li key={app.id} className="flex flex-wrap items-center justify-between gap-3 py-4 first:pt-0">
-                <div>
+              <li key={app.id} className="flex items-start justify-between gap-3 py-4 first:pt-0">
+                <div className="min-w-0">
                   <p className="font-medium text-text-primary">{formatCurrency(app.amount)}</p>
-                  <p className="text-sm text-text-muted">
+                  <p className="mt-0.5 truncate text-sm text-text-muted sm:whitespace-normal">
                     {app.purpose} · {formatDate(app.createdAt)}
                   </p>
                 </div>
-                <Badge status={app.status} />
+                <Badge status={app.status} className="shrink-0" />
               </li>
             ))}
           </ul>
@@ -159,7 +161,7 @@ export function UserDashboard() {
 
       {/* ── Pengunduran Diri ──────────────────────────────────────────────────── */}
       <Card className="mt-6 border border-danger/20">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h3 className="font-medium text-text-primary">Pengunduran Diri</h3>
             <p className="mt-1 text-sm text-text-muted leading-relaxed">
@@ -181,13 +183,13 @@ export function UserDashboard() {
           {!isPendingResignation && !isApprovedResignation && (
             <button
               onClick={() => { setResignError(null); setShowResignModal(true) }}
-              className="shrink-0 rounded-xl border border-danger/30 bg-danger/8 px-4 py-2 text-sm font-medium text-danger transition hover:bg-danger/15"
+              className="w-full shrink-0 rounded-xl border border-danger/30 bg-danger/8 px-4 py-2.5 text-sm font-medium text-danger transition hover:bg-danger/15 sm:w-auto sm:py-2"
             >
               Ajukan
             </button>
           )}
           {isPendingResignation && (
-            <span className="shrink-0 rounded-xl border border-warning/30 bg-warning/8 px-3 py-1.5 text-xs font-medium text-warning">
+            <span className="shrink-0 rounded-xl border border-warning/30 bg-warning/8 px-3 py-1.5 text-center text-xs font-medium text-warning sm:text-left">
               Menunggu Tinjauan
             </span>
           )}

@@ -1,4 +1,10 @@
 import { useState, useMemo } from 'react'
+import {
+    BanknotesIcon,
+    ClockIcon,
+    ChartBarIcon,
+    CalendarDaysIcon,
+} from '@heroicons/react/24/outline'
 import { Navbar } from '../components/layout/Navbar'
 import { Footer } from '../components/layout/Footer'
 import { Card } from '../components/ui/Card'
@@ -105,20 +111,35 @@ function buatJadwal(plafon, tenor, angsuranPerBulan) {
     })
 }
 
+const infoCards = [
+    { icon: <BanknotesIcon className="w-6 h-6 text-primary" />, label: "Plafon Tersedia", value: "Rp 2,5 Jt – Rp 50 Jt" },
+    { icon: <ClockIcon className="w-6 h-6 text-primary" />, label: "Tenor Maksimal", value: "60 Bulan" },
+    { icon: <ChartBarIcon className="w-6 h-6 text-primary" />, label: "Sistem Bunga", value: "Flat per Bulan" },
+    { icon: <CalendarDaysIcon className="w-6 h-6 text-primary" />, label: "Berlaku", value: "Tahun 2025–2031" },
+]
+
+const InfoCard = ({ icon, label, value }) => (
+    <div className="bg-surface-card border border-border rounded-2xl p-5 flex flex-col gap-2 shadow-sm hover:shadow-md transition-all duration-300">
+        <div>{icon}</div>
+        <p className="text-[11px] font-bold uppercase tracking-widest text-text-muted">{label}</p>
+        <p className="text-sm font-semibold text-text-primary leading-snug">{value}</p>
+    </div>
+)
+
 export function SimulasiPinjamanPage() {
     const [plafon, setPlafon] = useState(10_000_000)
     const [tenor, setTenor] = useState(12)
     const [showJadwal, setShowJadwal] = useState(false)
     //eslint-disable-next-line
     const [highlightCell, setHighlightCell] = useState(null) // { plafonIdx, tenor }
-    
+
     const plafonOptions = TABEL.map((r) => r.plafon)
-    
+
     // Cek apakah tenor tersedia untuk plafon yang dipilih
     const rowDipilih = TABEL.find((r) => r.plafon === plafon)
     //eslint-disable-next-line
     const tenorTersedia = TENORS.filter((t) => rowDipilih?.angsuran[t] !== null)
-    
+
     //eslint-disable-next-line
     const detail = useMemo(() => hitungDetail(plafon, tenor), [plafon, tenor])
     const jadwal = useMemo(
@@ -147,32 +168,35 @@ export function SimulasiPinjamanPage() {
             <Navbar />
 
             {/* ── Header ──────────────────────────────────────────────── */}
-            <section className="border-b border-gray-100 bg-surface-card">
-                <div className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
-                    <span className="inline-block rounded-xl bg-primary/8 px-3 py-1 text-xs font-medium text-primary">
-                        Layanan Pinjaman
-                    </span>
-                    <h1 className="mt-4 text-3xl font-medium text-text-primary sm:text-4xl">
-                        Simulasi Pinjaman
-                    </h1>
-                    <p className="mt-3 max-w-xl text-base leading-relaxed text-text-muted">
-                        Hitung estimasi angsuran pinjaman sesuai tabel resmi Koperasi Karyawan dan Dosen
-                        Universitas Lancang Kuning tahun 2025–2031.
-                    </p>
-                </div>
-            </section>
+            <header className="bg-surface-card border-b border-border py-12 px-6 text-center shadow-sm">
+                <span className="inline-block rounded-full bg-primary/10 px-4 py-1 text-xs font-semibold text-primary uppercase tracking-widest">
+                    Layanan Pinjaman
+                </span>
+                <h1 className="mt-3 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+                    Simulasi Pinjaman
+                </h1>
+                <p className="mt-2 text-base text-text-muted max-w-xl mx-auto">
+                    Hitung estimasi angsuran pinjaman sesuai tabel resmi Koperasi Karyawan dan Dosen
+                    Universitas Lancang Kuning tahun 2025–2031.
+                </p>
+            </header>
 
             <div className="mx-auto w-full max-w-6xl px-6 py-10 sm:py-14 space-y-10">
 
                 {/* ── Kalkulator ──────────────────────────────────────────── */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
+                    {infoCards.map((card, i) => (
+                        <InfoCard key={i} {...card} />
+                    ))}
+                </div>
                 <div className="grid gap-6 lg:grid-cols-5">
                     <div className="lg:col-span-2 space-y-5">
 
                         {/* Input plafon */}
                         <Card>
-                            <p className="text-xs font-medium uppercase tracking-wider text-text-muted mb-4">
+                            <span className="inline-block text-[11px] font-bold uppercase tracking-widest text-primary bg-primary/10 px-3 py-0.5 rounded-full mb-4">
                                 Plafon Pinjaman
-                            </p>
+                            </span>
                             <div className="grid grid-cols-2 gap-2">
                                 {plafonOptions.map((p) => (
                                     <button
@@ -180,8 +204,8 @@ export function SimulasiPinjamanPage() {
                                         type="button"
                                         onClick={() => handlePlafonChange(p)}
                                         className={`rounded-xl px-3 py-2 text-sm font-medium transition ${plafon === p
-                                                ? 'bg-primary text-white shadow-sm'
-                                                : 'border border-gray-200 bg-surface text-text-muted hover:bg-gray-50 hover:text-text-primary'
+                                            ? 'bg-primary text-white shadow-sm'
+                                            : 'border border-gray-200 bg-surface text-text-muted hover:bg-gray-50 hover:text-text-primary'
                                             }`}
                                     >
                                         {formatCurrency(p)}
@@ -192,9 +216,9 @@ export function SimulasiPinjamanPage() {
 
                         {/* Input tenor */}
                         <Card>
-                            <p className="text-xs font-medium uppercase tracking-wider text-text-muted mb-4">
+                            <span className="inline-block text-[11px] font-bold uppercase tracking-widest text-primary bg-primary/10 px-3 py-0.5 rounded-full mb-4">
                                 Jangka Waktu
-                            </p>
+                            </span>
                             <div className="grid grid-cols-3 gap-2">
                                 {TENORS.map((t) => {
                                     const tersedia = rowDipilih?.angsuran[t] !== null
@@ -205,10 +229,10 @@ export function SimulasiPinjamanPage() {
                                             disabled={!tersedia}
                                             onClick={() => handleTenorChange(t)}
                                             className={`rounded-xl px-3 py-2 text-sm font-medium transition ${!tersedia
-                                                    ? 'cursor-not-allowed border border-gray-100 bg-surface text-gray-300'
-                                                    : tenor === t
-                                                        ? 'bg-primary text-white shadow-sm'
-                                                        : 'border border-gray-200 bg-surface text-text-muted hover:bg-gray-50 hover:text-text-primary'
+                                                ? 'cursor-not-allowed border border-gray-100 bg-surface text-gray-300'
+                                                : tenor === t
+                                                    ? 'bg-primary text-white shadow-sm'
+                                                    : 'border border-gray-200 bg-surface text-text-muted hover:bg-gray-50 hover:text-text-primary'
                                                 }`}
                                         >
                                             {t} bln
@@ -228,7 +252,7 @@ export function SimulasiPinjamanPage() {
                             <>
                                 <Card highlight>
                                     <p className="ds-label">Angsuran per Bulan</p>
-                                    <p className="ds-display-value mt-2 text-primary text-3xl">
+                                    <p className="ds-display-value mt-2 text-primary text-2xl sm:text-3xl wrap-break-words">
                                         {formatCurrency(detail.angsuranPerBulan)}
                                     </p>
                                     <p className="mt-1 text-xs text-text-muted">
@@ -294,26 +318,26 @@ export function SimulasiPinjamanPage() {
                             </span>
                         </div>
                         <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
+                            <table className="w-full text-sm" style={{ minWidth: 480 }}>
                                 <thead>
                                     <tr className="border-b border-gray-100">
-                                        <th className="pb-3 text-left text-xs font-medium text-text-muted">Bulan</th>
-                                        <th className="pb-3 text-right text-xs font-medium text-text-muted">Pokok</th>
-                                        <th className="pb-3 text-right text-xs font-medium text-text-muted">Bunga</th>
-                                        <th className="pb-3 text-right text-xs font-medium text-text-muted">Angsuran</th>
-                                        <th className="pb-3 text-right text-xs font-medium text-text-muted">Sisa</th>
+                                        <th className="pb-3 text-left text-[11px] sm:text-xs font-medium text-text-muted whitespace-nowrap px-2">Bulan</th>
+                                        <th className="pb-3 text-right text-[11px] sm:text-xs font-medium text-text-muted whitespace-nowrap px-2">Pokok</th>
+                                        <th className="pb-3 text-right text-[11px] sm:text-xs font-medium text-text-muted whitespace-nowrap px-2">Bunga</th>
+                                        <th className="pb-3 text-right text-[11px] sm:text-xs font-medium text-text-muted whitespace-nowrap px-2">Angsuran</th>
+                                        <th className="pb-3 text-right text-[11px] sm:text-xs font-medium text-text-muted whitespace-nowrap px-2">Sisa</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-50">
                                     {jadwal.map((row) => (
                                         <tr key={row.bulan}>
-                                            <td className="py-2.5 text-text-muted">Bulan {row.bulan}</td>
-                                            <td className="py-2.5 text-right text-text-primary">{formatCurrency(row.pokok)}</td>
-                                            <td className="py-2.5 text-right text-warning">{formatCurrency(row.bunga)}</td>
-                                            <td className="py-2.5 text-right font-medium text-text-primary">
+                                            <td className="py-2.5 text-text-muted text-xs sm:text-sm whitespace-nowrap px-2">Bulan {row.bulan}</td>
+                                            <td className="py-2.5 text-right text-text-primary text-xs sm:text-sm whitespace-nowrap px-2">{formatCurrency(row.pokok)}</td>
+                                            <td className="py-2.5 text-right text-warning text-xs sm:text-sm whitespace-nowrap px-2">{formatCurrency(row.bunga)}</td>
+                                            <td className="py-2.5 text-right font-medium text-text-primary text-xs sm:text-sm whitespace-nowrap px-2">
                                                 {formatCurrency(row.angsuran)}
                                             </td>
-                                            <td className="py-2.5 text-right text-text-muted">
+                                            <td className="py-2.5 text-right text-text-muted text-xs sm:text-sm whitespace-nowrap px-2">
                                                 {row.sisa === 0 ? (
                                                     <span className="text-success font-medium">Lunas</span>
                                                 ) : (
@@ -359,7 +383,7 @@ export function SimulasiPinjamanPage() {
                                     {TENORS.map((t) => (
                                         <th
                                             key={t}
-                                            className="pb-3 text-center text-xs font-medium text-text-muted px-2"
+                                            className="pb-3 text-center text-[10px] sm:text-xs font-medium text-text-muted px-1 sm:px-2"
                                         >
                                             {t}
                                         </th>
@@ -388,11 +412,11 @@ export function SimulasiPinjamanPage() {
                                                             window.scrollTo({ top: 0, behavior: 'smooth' })
                                                         }
                                                     }}
-                                                    className={`py-3 text-center px-2 text-xs transition ${val
-                                                            ? isActive
-                                                                ? 'rounded-lg bg-primary text-white font-medium cursor-pointer'
-                                                                : 'text-text-primary cursor-pointer hover:bg-primary/8 hover:text-primary rounded-lg'
-                                                            : 'text-gray-200 select-none'
+                                                    className={`py-2.5 sm:py-3 text-center px-1 sm:px-2 text-[10px] sm:text-xs whitespace-nowrap transition ${val
+                                                        ? isActive
+                                                            ? 'rounded-lg bg-primary text-white font-medium cursor-pointer'
+                                                            : 'text-text-primary cursor-pointer hover:bg-primary/8 hover:text-primary rounded-lg'
+                                                        : 'text-gray-200 select-none'
                                                         }`}
                                                 >
                                                     {val ? formatRibuan(val) : '—'}

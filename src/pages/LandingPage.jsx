@@ -1,18 +1,12 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Navbar } from '../components/layout/Navbar'
 import { Footer } from '../components/layout/Footer'
 import { Card, StatCard } from '../components/ui/Card'
 import { IconUsers, IconWallet, IconLoan, IconNews } from '../components/ui/Icons'
 import { formatCurrency } from '../utils/format'
 import { getPublicNews, buildImageUrl } from '../services/newsService'
-
-// ─── Dummy data ───────────────────────────────────────────────────
-const dummyStats = {
-    totalMembers: 312,
-    activeMembers: 287,
-    totalSavings: 4_875_600_000,
-    totalLoans: 2_340_000_000,
-}
+import { getPublicStats } from '../services/memberService'
 
 const features = [
     {
@@ -65,57 +59,66 @@ function NewsCard({ item }) {
     const imgUrl = buildImageUrl(item.thumbnail_url)
 
     return (
-        <article className="ds-card flex flex-col gap-0 overflow-hidden p-0 transition-shadow hover:shadow-md group">
-            {/* Thumbnail */}
-            <div className="relative h-44 w-full overflow-hidden bg-surface">
-                {imgUrl ? (
-                    <img
-                        src={imgUrl}
-                        alt={item.title}
-                        className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                    />
-                ) : (
-                    <div className="flex h-full w-full items-center justify-center">
-                        <IconNews className="h-8 w-8 text-text-muted/30" />
-                    </div>
-                )}
-            </div>
-
-            {/* Konten */}
-            <div className="flex flex-1 flex-col gap-3 p-5">
-                <time className="text-xs font-medium text-primary/70">
-                    {formatNewsDate(item.published_at)}
-                </time>
-
-                <h3 className="font-medium leading-snug text-text-primary line-clamp-2 group-hover:text-primary transition-colors">
-                    {item.title}
-                </h3>
-
-                {item.excerpt && (
-                    <p className="text-sm leading-relaxed text-text-muted line-clamp-3">
-                        {item.excerpt}
-                    </p>
-                )}
-
-                <div className="mt-auto pt-1">
-                    <span className="text-xs font-medium text-primary/80">
-                        {item.author?.name ?? 'Admin Koperasi'}
-                    </span>
+        <Link to={`/berita/${item.slug}`} className="block">
+            <article className="ds-card flex flex-col gap-0 overflow-hidden p-0 transition-shadow hover:shadow-md group h-full">
+                {/* Thumbnail */}
+                <div className="relative h-44 w-full overflow-hidden bg-surface">
+                    {imgUrl ? (
+                        <img
+                            src={imgUrl}
+                            alt={item.title}
+                            className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                        />
+                    ) : (
+                        <div className="flex h-full w-full items-center justify-center">
+                            <IconNews className="h-8 w-8 text-text-muted/30" />
+                        </div>
+                    )}
                 </div>
-            </div>
-        </article>
+
+                {/* Konten */}
+                <div className="flex flex-1 flex-col gap-3 p-5">
+                    <time className="text-xs font-medium text-primary/70">
+                        {formatNewsDate(item.published_at)}
+                    </time>
+
+                    <h3 className="font-medium leading-snug text-text-primary line-clamp-2 group-hover:text-primary transition-colors">
+                        {item.title}
+                    </h3>
+
+                    {item.excerpt && (
+                        <p className="text-sm leading-relaxed text-text-muted line-clamp-3">
+                            {item.excerpt}
+                        </p>
+                    )}
+
+                    <div className="mt-auto pt-1">
+                        <span className="text-xs font-medium text-primary/80">
+                            {item.author?.name ?? 'Admin Koperasi'}
+                        </span>
+                    </div>
+                </div>
+            </article>
+        </Link>
     )
 }
 
 export function LandingPage() {
     const [news, setNews] = useState([])
     const [newsLoading, setNewsLoading] = useState(true)
+    const [stats, setStats] = useState(null)
+    const [statsLoading, setStatsLoading] = useState(true)
 
     useEffect(() => {
         getPublicNews(3)
             .then((res) => setNews(res.news ?? []))
             .catch(() => setNews([]))
             .finally(() => setNewsLoading(false))
+
+        getPublicStats()
+            .then((data) => setStats(data))
+            .catch(() => setStats(null))
+            .finally(() => setStatsLoading(false))
     }, [])
 
     return (
@@ -191,21 +194,25 @@ export function LandingPage() {
                 <div className="grid gap-5 sm:grid-cols-3">
                     <StatCard
                         title="Total Anggota"
-                        value={dummyStats.totalMembers}
-                        subtitle={`${dummyStats.activeMembers} anggota aktif`}
+                        value={statsLoading ? '—' : stats?.totalMembers ?? '—'}
+                        subtitle={
+                            statsLoading
+                                ? 'Memuat...'
+                                : `${stats?.activeMembers ?? 0} anggota aktif`
+                        }
                         icon={IconUsers}
                         accent="primary"
                     />
                     <StatCard
                         title="Saldo Simpanan Aktif"
-                        value={formatCurrency(dummyStats.totalSavings)}
+                        value={statsLoading ? '—' : formatCurrency(stats?.totalSavings ?? 0)}
                         subtitle="Dana simpanan anggota"
                         icon={IconWallet}
                         accent="success"
                     />
                     <StatCard
                         title="Saldo Pinjaman Aktif"
-                        value={formatCurrency(dummyStats.totalLoans)}
+                        value={statsLoading ? '—' : formatCurrency(stats?.totalLoans ?? 0)}
                         subtitle="Total pinjaman berjalan"
                         icon={IconLoan}
                         accent="accent"

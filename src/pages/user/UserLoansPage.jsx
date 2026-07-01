@@ -21,24 +21,26 @@ export function UserLoansPage() {
   return (
     <DashboardLayout title="Pinjaman Saya" subtitle="Daftar pinjaman dan cicilan" navItems={UserNavbar}>
       {loans.length === 0 ? (
-        <Card className="py-16 text-center">
+        <Card className="py-10 text-center sm:py-16">
           <p className="text-sm leading-relaxed text-text-muted">Anda belum memiliki pinjaman</p>
         </Card>
       ) : (
-        <div className="grid gap-5">
+        <div className="grid gap-4 sm:gap-5">
           {loans.map((loan) => {
-            const paidPercent = Math.round(((loan.amount - loan.remaining) / loan.amount) * 100)
+            const rawPercent = ((loan.amount - loan.remaining) / loan.amount) * 100
+            const progressBarPercent = Math.floor(rawPercent)
+            const displayPercent = rawPercent.toFixed(1)
             return (
               <Card key={loan.id}>
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <h3 className="font-medium text-text-primary">{loan.purpose}</h3>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <h3 className="truncate font-medium text-text-primary">{loan.purpose}</h3>
                     <p className="text-sm text-text-muted">Mulai {formatDate(loan.startDate)}</p>
                   </div>
-                  <Badge status={loan.status} />
+                  <Badge status={loan.status} className="shrink-0" />
                 </div>
 
-                <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="mt-5 grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
                   <div>
                     <p className="text-xs text-text-muted">Plafon</p>
                     <p className="mt-1 font-medium text-text-primary">{formatCurrency(loan.amount)}</p>
@@ -62,12 +64,12 @@ export function UserLoansPage() {
                 <div className="mt-5">
                   <div className="mb-1.5 flex justify-between text-xs text-text-muted">
                     <span>Progress pelunasan</span>
-                    <span>{paidPercent}%</span>
+                    <span>{displayPercent}%</span>
                   </div>
                   <div className="h-2 overflow-hidden rounded-lg bg-gray-100">
                     <div
                       className="h-full rounded-lg bg-primary transition-all"
-                      style={{ width: `${paidPercent}%` }}
+                      style={{ width: `${progressBarPercent}%` }}
                     />
                   </div>
                 </div>

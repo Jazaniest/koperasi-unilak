@@ -1,195 +1,303 @@
-import { Navbar } from '../components/layout/Navbar'
-import { Footer } from '../components/layout/Footer'
-import { Card } from '../components/ui/Card'
-// import { Badge } from '../../components/ui/Badge'
+import { Navbar } from '../components/layout/Navbar';
+import { Footer } from '../components/layout/Footer';
 
-// ─── Dummy data ───────────────────────────────────────────────────
-const pengurus = [
-    {
-        jabatan: 'Ketua',
-        kelompok: 'Pengurus',
-        name: 'Dr. H. Rasyid Asyari, S.E., M.M.',
-        nip: '196803121994031003',
-        unit: 'Fakultas Ekonomi',
-        periode: '2023 – 2026',
-        initials: 'RA',
+// ─── DATA STRUKTUR ───────────────────────────────────────────────────
+const dataStruktur = {
+    pimpinan: {
+        ketua: { nama: "Ir. Hamdan Yasid, M.P.", jabatan: "Ketua Koperasi", foto: "ketua.jpg", role: "pimpinan" },
+        wakilKetua: { nama: "Khairunnas, S.P., M.Si.", jabatan: "Wakil Ketua", foto: "waka.jpg", role: "pimpinan" },
     },
-    {
-        jabatan: 'Sekretaris',
-        kelompok: 'Pengurus',
-        name: 'Hj. Novia Hartati, S.E., M.Si.',
-        nip: '197204251998032001',
-        unit: 'Biro Keuangan',
-        periode: '2023 – 2026',
-        initials: 'NH',
+    administrasi: {
+        sekretaris: { nama: "Wahyudi Ariadi, S.Kom., M.M.", jabatan: "Sekretaris", foto: "sekretaris.jpg", role: "admin" },
+        wakilSekretaris: { nama: "Cici Triningsih, S.P., М.Р.", jabatan: "Wakil Sekretaris", foto: "wasekre.jpg", role: "admin" },
+        bendahara: { nama: "Anang Cahyono Ardi, S.P.", jabatan: "Bendahara", foto: "bendahara.jpg", role: "admin" },
     },
-    {
-        jabatan: 'Bendahara',
-        kelompok: 'Pengurus',
-        name: 'Drs. Syahrul Ramadhan, M.Ak.',
-        nip: '196901151993011002',
-        unit: 'Biro Keuangan',
-        periode: '2023 – 2026',
-        initials: 'SR',
-    },
-]
+    bidang: [
+        {
+            namaBidang: "Bidang Kerja Sama / Bisnis",
+            ketua: { nama: "Dr. Amalia, S.P., М.М.", jabatan: "Ketua Bidang KS / Bisnis", foto: "ketuabidangksb.jpg", role: "bidang" },
+            anggota: [
+                { nama: "Liviawati, S.E., M.Si, Ak.", jabatan: "Anggota", foto: "anggotaksb1.jpg" },
+                { nama: "Elly Nelwaty, S.Sos, M.M.", jabatan: "Anggota", foto: "anggotaksb2.jpg" },
+                { nama: "Diana, S.Sos.", jabatan: "Anggota", foto: "anggotaksb3.jpg" },
+                { nama: "Eko Saputra Utama, S.IP., M.M.", jabatan: "Anggota", foto: "anggotaksb4.jpg" },
+            ],
+        },
+        {
+            namaBidang: "Bidang Humas / Sosial",
+            ketua: { nama: "Supriadi, M.Kom", jabatan: "Ketua Bidang Humas / Sosial", foto: "ketuabidanghs.jpg", role: "bidang" },
+            anggota: [
+                { nama: "Sindi Theresia, S.Pd.", jabatan: "Anggota", foto: "anggotahs1.jpg" },
+                { nama: "Bunga Apriliani, S.Kom., M.M.", jabatan: "Anggota", foto: "anggotahs2.jpg" },
+                { nama: "Sri Wahyuni, S.E.", jabatan: "Anggota", foto: "anggotahs3.jpg" },
+            ],
+        },
+    ],
+};
 
-const pengawas = [
-    {
-        jabatan: 'Ketua Pengawas',
-        kelompok: 'Pengawas',
-        name: 'Prof. Dr. Junaidi, M.Pd.',
-        nip: '196505201990031004',
-        unit: 'Rektorat',
-        periode: '2023 – 2026',
-        initials: 'JU',
-    },
-    {
-        jabatan: 'Anggota Pengawas',
-        kelompok: 'Pengawas',
-        name: 'Ir. Rina Susanti, M.T.',
-        nip: '197708142003122005',
-        unit: 'Fakultas Teknik',
-        periode: '2023 – 2026',
-        initials: 'RS',
-    },
-    {
-        jabatan: 'Anggota Pengawas',
-        kelompok: 'Pengawas',
-        name: 'Dra. Mulyaningsih, M.Hum.',
-        nip: '196812091995032002',
-        unit: 'Fakultas Hukum',
-        periode: '2023 – 2026',
-        initials: 'MU',
-    },
-]
+// ─── THEME PER ROLE ──────────────────────────────────────────────────
+const getTheme = (role) => {
+    switch (role) {
+        case 'pimpinan':
+            return {
+                accent: 'bg-primary',
+                border: 'border-primary',
+                badgeBg: 'bg-primary/10',
+                badgeText: 'text-primary',
+            };
+        case 'admin':
+            return {
+                accent: 'bg-primary-light',
+                border: 'border-primary-light',
+                badgeBg: 'bg-primary-light/10',
+                badgeText: 'text-primary-light',
+            };
+        case 'bidang':
+        default:
+            return {
+                accent: 'bg-primary-light',
+                border: 'border-primary-light',
+                badgeBg: 'bg-primary-light/10',
+                badgeText: 'text-primary-light',
+            };
+    }
+};
 
-const pengelola = [
-    {
-        jabatan: 'Manajer Simpan Pinjam',
-        kelompok: 'Pengelola',
-        name: 'Fitri Wulandari, S.E.',
-        nip: '198903042015042001',
-        unit: 'Koperasi',
-        periode: '2023 – kini',
-        initials: 'FW',
-    },
-    {
-        jabatan: 'Staf Administrasi',
-        kelompok: 'Pengelola',
-        name: 'Agus Prasetyo, A.Md.',
-        nip: '199205172019031003',
-        unit: 'Koperasi',
-        periode: '2023 – kini',
-        initials: 'AP',
-    },
-    {
-        jabatan: 'Staf IT & Sistem',
-        kelompok: 'Pengelola',
-        name: 'Bayu Eka Nugraha, S.Kom.',
-        nip: '199407282020121001',
-        unit: 'Koperasi',
-        periode: '2023 – kini',
-        initials: 'BE',
-    },
-]
+// ─── AVATAR FALLBACK URL ─────────────────────────────────────────────
+const avatarFallback = (nama, bg = '1e3a5f') =>
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(nama)}&background=${bg}&color=ffffff&font-size=0.35&bold=true`;
 
-const kelompokConfig = {
-    Pengurus: { accent: 'bg-primary/8 text-primary', border: 'border-primary/20' },
-    Pengawas: { accent: 'bg-success/10 text-success', border: 'border-success/20' },
-    Pengelola: { accent: 'bg-warning/10 text-warning', border: 'border-warning/20' },
-}
-
-function PersonCard({ person }) {
-    const cfg = kelompokConfig[person.kelompok]
+// ─── ORG CARD ────────────────────────────────────────────────────────
+const OrgCard = ({ person, compact = false }) => {
+    const theme = getTheme(person.role);
     return (
-        <Card className={`flex flex-col gap-4`}>
-            <div className="flex items-start gap-4">
-                <div className="ds-avatar h-12 w-12 shrink-0 text-sm">{person.initials}</div>
-                <div className="min-w-0 flex-1">
-                    <span className={`inline-block rounded-lg px-2.5 py-0.5 text-xs font-medium ${cfg.accent}`}>
-                        {person.jabatan}
-                    </span>
-                    <p className="mt-1.5 font-medium leading-snug text-text-primary">{person.name}</p>
-                    <p className="mt-0.5 text-xs text-text-muted">{person.unit}</p>
-                </div>
-            </div>
-            <dl className="grid grid-cols-2 gap-x-4 gap-y-2 border-t border-gray-100 pt-4 text-xs">
-                <div>
-                    <dt className="text-text-muted">NIP</dt>
-                    <dd className="mt-0.5 font-medium text-text-primary">{person.nip}</dd>
-                </div>
-                <div>
-                    <dt className="text-text-muted">Periode</dt>
-                    <dd className="mt-0.5 font-medium text-text-primary">{person.periode}</dd>
-                </div>
-            </dl>
-        </Card>
-    )
-}
+        <div className={`relative bg-surface-card rounded-2xl border border-border overflow-hidden flex flex-col items-center text-center shadow-sm hover:shadow-md transition-all duration-300 ${compact ? 'p-3' : 'p-4'}`}>
+            {/* Top accent bar */}
+            <div className={`absolute top-0 inset-x-0 h-1.5 ${theme.accent}`} />
 
-function Section({ title, subtitle, data }) {
-    return (
-        <section>
-            <div className="mb-6 flex items-end justify-between gap-4 border-b border-gray-100 pb-4">
-                <div>
-                    <h2 className="text-lg font-medium text-text-primary">{title}</h2>
-                    {subtitle && <p className="mt-0.5 text-sm text-text-muted">{subtitle}</p>}
-                </div>
-                <span className="rounded-xl border border-gray-100 bg-surface px-3 py-1 text-xs font-medium text-text-muted">
-                    {data.length} orang
-                </span>
+            {/* Avatar */}
+            <div className={`${compact ? 'w-14 h-14' : 'w-20 h-20'} rounded-full overflow-hidden border-2 ${theme.border} mt-2 mb-3 shrink-0 group-hover:scale-105 transition-transform duration-300`}>
+                <img
+                    src={`/images/struktur/${person.foto}`}
+                    alt={person.nama}
+                    className="w-full h-full object-cover rounded-full"
+                    onError={(e) => { e.target.src = avatarFallback(person.nama); }}
+                />
             </div>
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {data.map((p) => (
-                    <PersonCard key={p.nip} person={p} />
-                ))}
-            </div>
-        </section>
-    )
-}
 
+            {/* Badge jabatan */}
+            <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${theme.badgeBg} ${theme.badgeText}`}>
+                {person.jabatan}
+            </span>
+
+            {/* Nama */}
+            <p className={`${compact ? 'text-xs' : 'text-sm'} font-semibold text-text-primary mt-2 leading-snug px-1`}>
+                {person.nama}
+            </p>
+        </div>
+    );
+};
+
+// ─── ANGGOTA ROW CARD ────────────────────────────────────────────────
+const AnggotaCard = ({ person }) => (
+    <div className="flex items-center gap-3 bg-surface-card border border-border rounded-xl p-3 shadow-sm hover:shadow-md transition-all">
+        <img
+            src={`/images/struktur/${person.foto}`}
+            alt={person.nama}
+            className="w-10 h-10 rounded-full object-cover border border-border shrink-0"
+            onError={(e) => { e.target.src = avatarFallback(person.nama); }}
+        />
+        <div className="min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Anggota</p>
+            <p className="text-xs font-semibold text-text-primary leading-snug mt-0.5 truncate">{person.nama}</p>
+        </div>
+    </div>
+);
+
+// ─── CONNECTOR: vertical line ────────────────────────────────────────
+const LineV = ({ height = 'h-8', color = 'bg-primary/20' }) => (
+    <div className={`w-px ${height} ${color} mx-auto`} />
+);
+
+// ─── SECTION LABEL (mobile) ──────────────────────────────────────────
+const SectionLabel = ({ children, color = 'border-primary text-primary' }) => (
+    <h2 className={`text-[11px] font-bold uppercase tracking-widest pl-3 border-l-4 ${color} mb-3`}>
+        {children}
+    </h2>
+);
+
+// ─── PAGE ────────────────────────────────────────────────────────────
 export function StrukturPengurusPage() {
+    const { pimpinan, administrasi, bidang } = dataStruktur;
+
     return (
-        <div className="min-h-screen bg-surface flex flex-col">
+        <div className="min-h-screen bg-surface flex flex-col text-text-primary font-sans">
             <Navbar />
 
-            {/* ── Header ──────────────────────────────────────────────── */}
-            <section className="border-b border-gray-100 bg-surface-card">
-                <div className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
-                    <span className="inline-block rounded-xl bg-primary/8 px-3 py-1 text-xs font-medium text-primary">
-                        Organisasi
-                    </span>
-                    <h1 className="mt-4 text-3xl font-medium text-text-primary sm:text-4xl">
-                        Struktur Pengurus
-                    </h1>
-                    <p className="mt-3 max-w-xl text-base leading-relaxed text-text-muted">
-                        Susunan pengurus, pengawas, dan pengelola Koperasi Unilak periode 2023 – 2026.
-                    </p>
+            {/* HEADER */}
+            <header className="bg-surface-card border-b border-border py-12 px-6 text-center shadow-sm">
+                <span className="inline-block rounded-full bg-primary/10 px-4 py-1 text-xs font-semibold text-primary uppercase tracking-widest">
+                    Manajemen Koperasi
+                </span>
+                <h1 className="mt-3 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+                    Struktur Organisasi
+                </h1>
+                <p className="mt-2 text-base text-text-muted max-w-xl mx-auto">
+                    Susunan Pengurus & Bidang Kerja Koperasi Unilak · Periode 2026 - 2031
+                </p>
+            </header>
+
+            <main className="flex-1 py-14 px-4 max-w-6xl mx-auto w-full">
+
+                {/* ══════════════════════════════════════════════════════ */}
+                {/* DESKTOP TREE (lg+)                                     */}
+                {/* ══════════════════════════════════════════════════════ */}
+                <div className="hidden lg:flex flex-col items-center w-full">
+
+                    {/* L1 — Ketua */}
+                    <div className="w-48">
+                        <OrgCard person={pimpinan.ketua} />
+                    </div>
+
+                    <LineV height="h-8" />
+
+                    {/* L2 — Wakil Ketua */}
+                    <div className="w-48">
+                        <OrgCard person={pimpinan.wakilKetua} />
+                    </div>
+
+                    <LineV height="h-8" />
+
+                    {/* L3 — Admin branch */}
+                    <div className="relative flex justify-center w-full">
+                        {/* horizontal connector bar */}
+                        <div className="absolute top-0 left-[calc(50%-88px)] right-[calc(50%-88px)] h-px bg-primary/20" />
+
+                        <div className="flex gap-16 pt-0">
+                            {/* Left: Sekretaris stack */}
+                            <div className="flex flex-col items-center">
+                                <LineV height="h-8" />
+                                <div className="w-48">
+                                    <OrgCard person={administrasi.sekretaris} />
+                                </div>
+                                <LineV height="h-6" color="bg-primary-light/30" />
+                                <div className="w-48">
+                                    <OrgCard person={administrasi.wakilSekretaris} />
+                                </div>
+                            </div>
+
+                            {/* Right: Bendahara */}
+                            <div className="flex flex-col items-center">
+                                <LineV height="h-8" />
+                                <div className="w-48">
+                                    <OrgCard person={administrasi.bendahara} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <LineV height="h-10" />
+
+                    {/* L4 — Bidang */}
+                    <div className="relative flex justify-center gap-8 w-full">
+                        {/* horizontal connector bar spanning both bidang */}
+                        <div className="absolute top-0 left-[calc(50%-160px)] right-[calc(50%-160px)] h-px bg-primary/20" />
+
+                        {bidang.map((bid, idx) => (
+                            <div key={idx} className="flex flex-col items-center flex-1 max-w-sm">
+                                <LineV height="h-10" />
+
+                                {/* Bidang container */}
+                                <div className="w-full bg-primary/5 border border-primary/10 rounded-2xl p-5 flex flex-col items-center">
+                                    {/* Title pill */}
+                                    <span className="text-primary font-bold text-[11px] uppercase tracking-widest bg-surface-card border border-border px-4 py-1.5 rounded-full shadow-sm mb-5">
+                                        {bid.namaBidang}
+                                    </span>
+
+                                    {/* Ketua bidang */}
+                                    <div className="w-44">
+                                        <OrgCard person={bid.ketua} compact />
+                                    </div>
+
+                                    <LineV height="h-6" color="bg-primary-light/30" />
+
+                                    {/* Anggota grid */}
+                                    <div className="grid grid-cols-2 gap-3 w-full">
+                                        {bid.anggota.map((ang, i) => (
+                                            <AnggotaCard key={i} person={ang} />
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-            </section>
 
-            {/* ── Konten ──────────────────────────────────────────────── */}
-            <div className="mx-auto w-full max-w-6xl px-6 py-10 sm:py-14 space-y-14">
-                <Section
-                    title="Pengurus"
-                    subtitle="Bertanggung jawab atas pengelolaan koperasi secara umum"
-                    data={pengurus}
-                />
-                <Section
-                    title="Pengawas"
-                    subtitle="Melakukan pengawasan dan audit terhadap jalannya koperasi"
-                    data={pengawas}
-                />
-                <Section
-                    title="Pengelola"
-                    subtitle="Pelaksana operasional harian koperasi"
-                    data={pengelola}
-                />
-            </div>
+                {/* ══════════════════════════════════════════════════════ */}
+                {/* MOBILE & TABLET (< lg)                                 */}
+                {/* ══════════════════════════════════════════════════════ */}
+                <div className="flex flex-col gap-10 lg:hidden">
 
-            <div className="flex-1" />
+                    {/* Pimpinan */}
+                    <section>
+                        <SectionLabel color="border-primary text-primary">Pimpinan Koperasi</SectionLabel>
+                        <div className="grid grid-cols-2 gap-3 sm:grid-cols-2">
+                            <OrgCard person={pimpinan.ketua} />
+                            <OrgCard person={pimpinan.wakilKetua} />
+                        </div>
+                    </section>
+
+                    {/* Kesekretariatan */}
+                    <section>
+                        <SectionLabel color="border-primary-light text-primary-light">Kesekretariatan & Bendahara</SectionLabel>
+
+                        {/* Sekretaris + Wakil Sekretaris dalam satu box */}
+                        <div className="bg-primary-light/5 border border-primary-light/20 rounded-2xl p-4 mb-3">
+                            <OrgCard person={administrasi.sekretaris} />
+                            <div className="flex items-start gap-3 mt-3 pl-4 border-l-2 border-primary-light/30">
+                                <div className="flex-1">
+                                    <OrgCard person={administrasi.wakilSekretaris} />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Bendahara standalone */}
+                        <OrgCard person={administrasi.bendahara} />
+                    </section>
+
+                    {/* Bidang */}
+                    <section>
+                        <SectionLabel color="border-primary text-primary">Bidang Kerja</SectionLabel>
+                        <div className="flex flex-col gap-4">
+                            {bidang.map((bid, idx) => (
+                                <div key={idx} className="bg-primary/5 border border-primary/10 rounded-2xl overflow-hidden">
+                                    {/* Header bidang */}
+                                    <div className="bg-primary/10 border-b border-primary/10 px-4 py-2.5">
+                                        <span className="text-primary font-bold text-[11px] uppercase tracking-widest">
+                                            {bid.namaBidang}
+                                        </span>
+                                    </div>
+
+                                    <div className="p-4 flex flex-col gap-3">
+                                        {/* Ketua bidang */}
+                                        <OrgCard person={bid.ketua} compact />
+
+                                        {/* Anggota list */}
+                                        <div className="flex flex-col gap-2 pl-3 border-l-2 border-primary-light/30">
+                                            {bid.anggota.map((ang, i) => (
+                                                <AnggotaCard key={i} person={ang} />
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                </div>
+
+            </main>
+
             <Footer />
         </div>
-    )
+    );
 }

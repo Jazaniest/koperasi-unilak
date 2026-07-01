@@ -5,6 +5,7 @@ import { Button } from '../ui/Button'
 
 const navLinks = [
     { to: '/', label: 'Beranda', end: true },
+    { to: '/sejarah', label: 'Sejarah' },
     { to: '/visi-misi', label: 'Visi & Misi' },
     { to: '/struktur-pengurus', label: 'Struktur Pengurus' },
     { to: '/simulasi-pinjaman', label: 'Simulasi Pinjaman' },
@@ -58,8 +59,9 @@ export function Navbar() {
                 </button>
             </div>
 
+            {/* PERBAIKAN DI SINI: Menambahkan class absolute, top-full, left-0, right-0, dan shadow-lg */}
             {mobileOpen && (
-                <div className="border-t border-gray-100 bg-surface-card px-6 py-4 lg:hidden">
+                <div className="absolute top-full left-0 right-0 border-t border-gray-100 bg-surface-card px-6 py-4 lg:hidden shadow-lg">
                     <nav className="space-y-1">
                         {navLinks.map((link) => (
                             <NavLink

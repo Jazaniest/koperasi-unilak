@@ -48,7 +48,7 @@ export function Footer() {
                         <ul className="space-y-3 text-sm text-text-muted">
                             <li>Jl. Yos Sudarso KM. 8,<br />Pekanbaru, Riau 28284</li>
                             <li>koperasi@unilak.ac.id</li>
-                            <li>(0761) 51506</li>
+                            {/* <li>(0761) 51506</li> */}
                         </ul>
                     </div>
                 </div>

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { DashboardLayout } from '../../components/layout/DashboardLayout'
 import { Card } from '../../components/ui/Card'
-import { Input, Textarea } from '../../components/ui/Input'
+import { Input, Textarea, Select } from '../../components/ui/Input'
 import { Button } from '../../components/ui/Button'
 import { Badge } from '../../components/ui/Badge'
 import { getMemberByUserId } from '../../services/memberService'
@@ -11,6 +11,8 @@ import { formatCurrency, formatDateTime } from '../../utils/format'
 import { UserNavbar } from '../../components/user/UserNavbar'
 import { useNavigate } from 'react-router-dom'
 import { getMemberLoans } from '../../services/loanService'
+import { ArrowPathIcon } from '@heroicons/react/24/outline'
+import { BankAccountField } from '../../components/user/BankAccountField'
 
 export function UserLoanApplicationPage() {
   const { user } = useAuth()
@@ -18,8 +20,9 @@ export function UserLoanApplicationPage() {
   const [form, setForm] = useState({
     amount: '',
     purpose: '',
-    tenorMonths: '12', // default awal 12 bulan
+    tenorMonths: '12',
     collateral: '',
+    paymentMethod: 'transfer', // ← tambahan
   })
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -49,17 +52,30 @@ export function UserLoanApplicationPage() {
     if (member) getLoanApplications({ memberId: member.id }).then(setApplications)
   }, [member, refreshKey])
 
-  // Fungsi pembantu untuk membuat format titik (ribuan) saat mengetik
-  const formatNumberWithDots = (value) => {
+  const formatDecimal = (value) => {
     if (!value) return ''
-    // Hapus semua karakter non-angka
-    const cleanNumber = value.replace(/\D/g, '')
-    // Tambahkan titik setiap kelipatan 3 angka dari belakang
-    return cleanNumber.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+    // Hanya izinkan angka dan satu koma
+    let cleanValue = value.replace(/[^0-9,]/g, '')
+    const parts = cleanValue.split(',')
+    if (parts.length > 2) {
+      cleanValue = parts[0] + ',' + parts.slice(1).join('')
+    }
+
+    const [integerPart, decimalPart] = cleanValue.split(',')
+
+    // Format bagian integer dengan titik
+    const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+
+    if (decimalPart !== undefined) {
+      // Batasi 2 digit desimal
+      return `${formattedInteger},${decimalPart.substring(0, 2)}`
+    }
+
+    return formattedInteger
   }
 
   const handleAmountChange = (e) => {
-    const formattedValue = formatNumberWithDots(e.target.value)
+    const formattedValue = formatDecimal(e.target.value)
     setForm({ ...form, amount: formattedValue })
   }
 
@@ -73,8 +89,9 @@ export function UserLoanApplicationPage() {
       return
     }
 
-    // Bersihkan titik dari string nominal untuk mendapatkan angka murni
-    const rawAmount = Number(form.amount.replace(/\./g, ''))
+    // Hapus titik ribuan, lalu ganti koma desimal dengan titik
+    const parsableAmount = form.amount.replace(/\./g, '').replace(',', '.')
+    const rawAmount = Number(parsableAmount)
     const tenor = Number(form.tenorMonths)
 
     // Validasi minimal nominal pinjaman
@@ -99,11 +116,19 @@ export function UserLoanApplicationPage() {
       return
     }
 
+    if (form.paymentMethod === 'transfer' && (!member.bankName || !member.bankAccountNumber)) {
+      setError('Lengkapi rekening bank Anda terlebih dahulu untuk pembayaran via transfer')
+      return
+    }
+
+    setLoading(true)
+
     const result = await submitLoanApplication(member.id, {
       amount: rawAmount,
       purpose: form.purpose,
       tenorMonths: tenor,
       collateral: form.collateral,
+      paymentMethod: form.paymentMethod, // ← tambahan
     })
     setLoading(false)
 
@@ -125,8 +150,8 @@ export function UserLoanApplicationPage() {
         subtitle="Formulir akan diteruskan ke admin untuk persetujuan"
         navItems={UserNavbar}
       >
-        <Card className="max-w-lg mx-auto text-center py-10">
-          <div className="text-4xl mb-4">🔄</div>
+        <Card className="max-w-lg mx-auto text-center py-8 sm:py-10">
+          <ArrowPathIcon className="mx-auto mb-4 h-12 w-12 text-primary" />
           <h3 className="font-semibold text-text-primary text-lg mb-2">Anda Memiliki Pinjaman Aktif</h3>
           <p className="text-sm text-text-muted mb-1">
             Sisa pinjaman: <span className="font-semibold text-primary">{formatCurrency(activeLoan.remaining)}</span>
@@ -135,7 +160,7 @@ export function UserLoanApplicationPage() {
             Tidak bisa mengajukan pinjaman baru selama masih ada pinjaman berjalan.
             Gunakan fitur <strong>Top Up</strong> untuk menambah pinjaman.
           </p>
-          <Button onClick={() => navigate('/app/topup')} className="mx-auto">
+          <Button onClick={() => navigate('/app/topup')} className="w-full sm:w-auto sm:mx-auto">
             Ajukan Top Up Pinjaman →
           </Button>
         </Card>
@@ -149,10 +174,15 @@ export function UserLoanApplicationPage() {
       subtitle="Formulir akan diteruskan ke admin untuk persetujuan"
       navItems={UserNavbar}
     >
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-5 sm:gap-6 lg:grid-cols-2">
         <Card>
           <h3 className="font-medium text-text-primary">Formulir Pengajuan</h3>
-          <form onSubmit={handleSubmit} className="mt-5 space-y-5">
+
+          <div className="mt-5">
+            <BankAccountField member={member} onUpdated={(updated) => setMember((m) => ({ ...m, ...updated }))} />
+          </div>
+
+          <form onSubmit={handleSubmit} className="mt-5 space-y-4 sm:space-y-5">
             <Input
               label="Jumlah pinjaman (Rp)"
               type="text" // Diubah ke text agar bisa menampilkan format titik
@@ -175,6 +205,15 @@ export function UserLoanApplicationPage() {
               onChange={(e) => setForm({ ...form, tenorMonths: e.target.value })}
               placeholder="Minimal 12"
               required
+            />
+            <Select
+              label="Metode Pembayaran"
+              value={form.paymentMethod}
+              onChange={(e) => setForm({ ...form, paymentMethod: e.target.value })}
+              options={[
+                { value: 'transfer', label: 'Transfer Bank' },
+                { value: 'tunai', label: 'Tunai' },
+              ]}
             />
             <Input
               label="Jaminan / agunan (Upload Dokumen) *opsional"
@@ -206,16 +245,16 @@ export function UserLoanApplicationPage() {
             <ul className="mt-5 space-y-4">
               {applications.map((app) => (
                 <li key={app.id} className="rounded-xl border border-gray-100 bg-surface p-4">
-                  <div className="flex justify-between gap-2">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
                     <span className="font-medium text-text-primary">{formatCurrency(app.amount)}</span>
-                    <Badge status={app.status} />
+                    <Badge status={app.status} className="shrink-0" />
                   </div>
                   <p className="mt-1 text-sm text-text-muted">{app.purpose}</p>
                   <p className="mt-1 text-xs text-text-muted font-medium">Tenor: {app.tenorMonths} Bulan</p>
                   <p className="mt-2 text-xs text-text-muted">{formatDateTime(app.createdAt)}</p>
                   {app.adminNotes && (
                     <p className="mt-3 rounded-lg border border-gray-100 bg-surface-card p-3 text-xs leading-relaxed text-text-muted">
-                      <span className="font-medium text-text-primary">Catatan admin:</span>{' '}
+                      <span className="block font-medium text-text-primary">Catatan admin:</span>
                       {app.adminNotes}
                     </p>
                   )}

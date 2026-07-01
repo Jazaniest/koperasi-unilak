@@ -230,6 +230,26 @@ export function BendaharaTopUpPage() {
                                 </dd>
                             </div>
                             <div>
+                                <dt className="text-text-muted">Metode Pembayaran</dt>
+                                <dd className="font-medium text-text-primary">
+                                    {selected.paymentMethod === 'tunai' ? 'Tunai' : 'Transfer Bank'}
+                                </dd>
+                            </div>
+                            {selected.paymentMethod !== 'tunai' && (
+                                <div>
+                                    <dt className="text-text-muted">Rekening Tujuan</dt>
+                                    <dd className="text-text-primary">
+                                        {selected.memberBankName && selected.memberBankAccountNumber ? (
+                                            <>
+                                                {selected.memberBankName} — {selected.memberBankAccountNumber}
+                                            </>
+                                        ) : (
+                                            <span className="text-text-muted">Belum diisi anggota</span>
+                                        )}
+                                    </dd>
+                                </div>
+                            )}
+                            <div>
                                 <dt className="text-text-muted">Diajukan</dt>
                                 <dd className="text-text-primary">{formatDateTime(selected.createdAt)}</dd>
                             </div>

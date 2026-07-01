@@ -23,20 +23,24 @@ import { BendaharaHistoryPage } from './pages/bendahara/BendaharaHistoryPage'
 // import { SuperDashboard } from './pages/super/SuperDashboard'
 // import { SuperDatabasePage } from './pages/super/SuperDatabasePage'
 import { LandingPage } from './pages/LandingPage'
+import { SejarahPage } from './pages/SejarahPage'
 import { StrukturPengurusPage } from './pages/StrukturPengurusPage'
 import { VisiMisiPage } from './pages/VisiMisiPage'
 import { SimulasiPinjamanPage } from './pages/SimulasiPinjamanPage'
 
 import { UserTopUpPage } from './pages/user/UserTopUpPage'
 import { BendaharaTopUpPage } from './pages/bendahara/BendaharaTopUpPage'
+import { NewsDetailPage } from './pages/NewsDetailPage'
 
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/visi-misi" element={<VisiMisiPage />} />
+      <Route path="/sejarah" element={<SejarahPage />} />
       <Route path="/struktur-pengurus" element={<StrukturPengurusPage />} />
       <Route path="/simulasi-pinjaman" element={<SimulasiPinjamanPage />} />
+      <Route path="/berita/:slug" element={<NewsDetailPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
 
