@@ -97,3 +97,37 @@
 .animate-fade-in {
   animation: fade-in 0.35s ease-out;
 }
+
+/* ── Article Content ───────────────────────────────── */
+.prose-article {
+    color: var(--color-text-primary, #1a1a1a);
+}
+
+.article-p {
+    font-size: 1rem;          /* 16px */
+    line-height: 1.85;
+    margin-bottom: 1.5rem;
+    text-align: justify;
+    color: inherit;
+    letter-spacing: 0.01em;
+}
+
+.article-p:last-child {
+    margin-bottom: 0;
+}
+
+.article-h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 2rem 0 0.75rem;
+    color: inherit;
+}
+
+.article-h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 1.5rem 0 0.5rem;
+    color: inherit;
+}
