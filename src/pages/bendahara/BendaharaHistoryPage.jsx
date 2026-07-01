@@ -19,7 +19,11 @@ function TabelGabungan({ data, year, month }) {
         <p className="text-sm text-text-muted py-4">Tidak ada data transaksi bulan ini.</p>
     )
 
-    const fmt = (n) => n > 0 ? Number(n).toLocaleString('id-ID') : '—'
+    const fmt = (n) => {
+        if (n <= 0 || n === null || n === undefined) return '—'
+        // Jangan format integer, hanya format angka desimal
+        return Number.isInteger(n) ? n : Number(n).toLocaleString('id-ID')
+    }
 
     const totals = data.rows.reduce((acc, r) => ({
         loanAmount: acc.loanAmount + r.loanAmount,
