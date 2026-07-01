@@ -102,3 +102,21 @@ export async function reviewResignation(memberId, decision, notes) {
     return { success: false, error: err.message }
   }
 }
+
+/** Anggota: ubah nama bank & nomor rekening miliknya sendiri */
+export async function updateBankAccount(data) {
+  try {
+    const res = await apiRequest('/members/me/bank-account', {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    })
+    return { success: true, member: res.data }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+}
+
+export async function getPublicStats() {
+    const res = await apiRequest('/members/public-stats')
+    return res.data
+}
