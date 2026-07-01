@@ -163,9 +163,9 @@ export function BendaharaDashboard() {
                     accent="accent"
                 />
                 <StatCard
-                    title="Est. Bunga Bulan Ini"
+                    title="Est. jasa Bulan Ini"
                     value={formatCurrency(stats.estimasiBungaBulanIni)}
-                    subtitle="Pendapatan bunga"
+                    subtitle="Pendapatan jasa"
                     icon={IconChart}
                     accent="warning"
                 />
@@ -241,7 +241,7 @@ export function BendaharaDashboard() {
                         {[
                             { label: 'Simpanan Masuk', value: thisMonthReport.simpananMasuk },
                             { label: 'Cicilan Diterima', value: thisMonthReport.cicilanDiterima },
-                            { label: 'Bunga Diterima', value: thisMonthReport.bungaDiterima },
+                            { label: 'jasa Diterima', value: thisMonthReport.bungaDiterima },
                         ].map((item) => (
                             <div key={item.label} className="rounded-xl bg-surface px-3 py-2.5">
                                 <p className="text-xs text-text-muted leading-snug">{item.label}</p>

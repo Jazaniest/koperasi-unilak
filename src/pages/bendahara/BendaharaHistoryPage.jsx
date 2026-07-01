@@ -169,7 +169,7 @@ function TabelTahunan({ data }) {
                         <th className="border border-primary px-2 py-2">BULAN</th>
                         <th className="border border-primary px-2 py-2 text-right">Simpanan Masuk</th>
                         <th className="border border-primary px-2 py-2 text-right">Cicilan Diterima</th>
-                        <th className="border border-primary px-2 py-2 text-right">Bunga Diterima</th>
+                        <th className="border border-primary px-2 py-2 text-right">jasa Diterima</th>
                         <th className="border border-primary px-2 py-2 text-right">Total Pemasukan</th>
                     </tr>
                 </thead>

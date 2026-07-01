@@ -82,7 +82,7 @@ function cariAngsuran(plafon, tenor) {
     return { angsuran: null, plafonRef: row.plafon }
 }
 
-// Hitung bunga implisit dari tabel (bunga flat)
+// Hitung jasa implisit dari tabel (jasa flat)
 function hitungDetail(plafon, tenor) {
     const { angsuran, plafonRef } = cariAngsuran(plafon, tenor)
     if (!angsuran) return null
@@ -105,16 +105,16 @@ function buatJadwal(plafon, tenor, angsuranPerBulan) {
     const bungaPerBulan = angsuranPerBulan - pokokPerBulan
     return Array.from({ length: tenor }, (_, i) => {
         const pokok = Math.round(pokokPerBulan)
-        const bunga = Math.round(bungaPerBulan)
+        const jasa = Math.round(bungaPerBulan)
         sisa = Math.max(0, sisa - pokok)
-        return { bulan: i + 1, pokok, bunga, angsuran: angsuranPerBulan, sisa }
+        return { bulan: i + 1, pokok, jasa, angsuran: angsuranPerBulan, sisa }
     })
 }
 
 const infoCards = [
     { icon: <BanknotesIcon className="w-6 h-6 text-primary" />, label: "Plafon Tersedia", value: "Rp 2,5 Jt – Rp 50 Jt" },
     { icon: <ClockIcon className="w-6 h-6 text-primary" />, label: "Tenor Maksimal", value: "60 Bulan" },
-    { icon: <ChartBarIcon className="w-6 h-6 text-primary" />, label: "Sistem Bunga", value: "Flat per Bulan" },
+    { icon: <ChartBarIcon className="w-6 h-6 text-primary" />, label: "Sistem jasa", value: "Flat per Bulan" },
     { icon: <CalendarDaysIcon className="w-6 h-6 text-primary" />, label: "Berlaku", value: "Tahun 2025–2031" },
 ]
 
@@ -140,7 +140,6 @@ export function SimulasiPinjamanPage() {
     //eslint-disable-next-line
     const tenorTersedia = TENORS.filter((t) => rowDipilih?.angsuran[t] !== null)
 
-    //eslint-disable-next-line
     const detail = useMemo(() => hitungDetail(plafon, tenor), [plafon, tenor])
     const jadwal = useMemo(
         () => (detail ? buatJadwal(plafon, tenor, detail.angsuranPerBulan) : []),
@@ -268,13 +267,13 @@ export function SimulasiPinjamanPage() {
                                         </p>
                                     </Card>
                                     <Card>
-                                        <p className="ds-label">Total Bunga</p>
+                                        <p className="ds-label">Total jasa</p>
                                         <p className="ds-display-value mt-2 text-warning">
                                             {formatCurrency(detail.totalBunga)}
                                         </p>
                                     </Card>
                                     <Card>
-                                        <p className="ds-label">Bunga Flat/Bulan</p>
+                                        <p className="ds-label">jasa Flat/Bulan</p>
                                         <p className="ds-display-value mt-2 text-text-primary">
                                             {detail.bungaPerBulanPct.toFixed(2)}%
                                         </p>
@@ -323,7 +322,7 @@ export function SimulasiPinjamanPage() {
                                     <tr className="border-b border-gray-100">
                                         <th className="pb-3 text-left text-[11px] sm:text-xs font-medium text-text-muted whitespace-nowrap px-2">Bulan</th>
                                         <th className="pb-3 text-right text-[11px] sm:text-xs font-medium text-text-muted whitespace-nowrap px-2">Pokok</th>
-                                        <th className="pb-3 text-right text-[11px] sm:text-xs font-medium text-text-muted whitespace-nowrap px-2">Bunga</th>
+                                        <th className="pb-3 text-right text-[11px] sm:text-xs font-medium text-text-muted whitespace-nowrap px-2">jasa</th>
                                         <th className="pb-3 text-right text-[11px] sm:text-xs font-medium text-text-muted whitespace-nowrap px-2">Angsuran</th>
                                         <th className="pb-3 text-right text-[11px] sm:text-xs font-medium text-text-muted whitespace-nowrap px-2">Sisa</th>
                                     </tr>
@@ -333,7 +332,7 @@ export function SimulasiPinjamanPage() {
                                         <tr key={row.bulan}>
                                             <td className="py-2.5 text-text-muted text-xs sm:text-sm whitespace-nowrap px-2">Bulan {row.bulan}</td>
                                             <td className="py-2.5 text-right text-text-primary text-xs sm:text-sm whitespace-nowrap px-2">{formatCurrency(row.pokok)}</td>
-                                            <td className="py-2.5 text-right text-warning text-xs sm:text-sm whitespace-nowrap px-2">{formatCurrency(row.bunga)}</td>
+                                            <td className="py-2.5 text-right text-warning text-xs sm:text-sm whitespace-nowrap px-2">{formatCurrency(row.jasa)}</td>
                                             <td className="py-2.5 text-right font-medium text-text-primary text-xs sm:text-sm whitespace-nowrap px-2">
                                                 {formatCurrency(row.angsuran)}
                                             </td>

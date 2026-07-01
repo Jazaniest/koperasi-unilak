@@ -22,7 +22,7 @@ const features = [
     {
         icon: IconLoan,
         title: 'Pinjaman Terjangkau',
-        desc: 'Proses pengajuan pinjaman yang cepat dan bunga kompetitif untuk memenuhi berbagai kebutuhan finansial anggota.',
+        desc: 'Proses pengajuan pinjaman yang cepat dan jasa kompetitif untuk memenuhi berbagai kebutuhan finansial anggota.',
     },
 ]
 // ─────────────────────────────────────────────────────────────────

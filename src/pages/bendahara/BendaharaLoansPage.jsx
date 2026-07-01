@@ -344,7 +344,7 @@ export function BendaharaLoansPage() {
                                             <dd className="font-medium text-text-primary mt-0.5">{formatDate(detail.startDate)}</dd>
                                         </div>
                                         <div className="rounded-xl bg-surface px-3 py-2.5">
-                                            <dt className="text-xs text-text-muted">Bunga</dt>
+                                            <dt className="text-xs text-text-muted">jasa</dt>
                                             <dd className="font-medium text-text-primary mt-0.5">{detail.interestRate}% / tahun</dd>
                                         </div>
                                     </dl>

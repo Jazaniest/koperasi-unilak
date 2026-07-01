@@ -28,7 +28,7 @@ const dataStruktur = {
             ketua: { nama: "Supriadi, M.Kom", jabatan: "Ketua Bidang Humas / Sosial", foto: "ketuabidanghs.jpg", role: "bidang" },
             anggota: [
                 { nama: "Sindi Theresia, S.Pd.", jabatan: "Anggota", foto: "anggotahs1.jpg" },
-                { nama: "Bunga Apriliani, S.Kom., M.M.", jabatan: "Anggota", foto: "anggotahs2.jpg" },
+                { nama: "jasa Apriliani, S.Kom., M.M.", jabatan: "Anggota", foto: "anggotahs2.jpg" },
                 { nama: "Sri Wahyuni, S.E.", jabatan: "Anggota", foto: "anggotahs3.jpg" },
             ],
         },
