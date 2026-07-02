@@ -58,10 +58,6 @@ export function BendaharaMemberDetailPage() {
                     <h3 className="font-medium text-text-primary">Profil Anggota</h3>
                     <dl className="mt-5 space-y-4 text-sm">
                         <div>
-                            <dt className="text-text-muted">NIK</dt>
-                            <dd className="mt-0.5 font-medium text-text-primary">{memberData.nik}</dd>
-                        </div>
-                        <div>
                             <dt className="text-text-muted">Email</dt>
                             <dd className="mt-0.5 font-medium text-text-primary">{memberData.email}</dd>
                         </div>

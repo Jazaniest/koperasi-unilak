@@ -5,7 +5,7 @@ import { IconLogo, IconMenu, IconClose, IconLogout, IconChevronUp, IconKey, Icon
 import { ROLE_LABELS } from '../../utils/format'
 import { Button } from '../ui/Button'
 import { ModalEditProfil } from '../user/ModalEditProfile'
-import { ModalUbahPassword } from '../user/ModalUbahPassword'
+import { ModalUbahAkun } from '../shared/ModalUbahAkun'
 import * as authService from '../../services/authService'
 
 export function DashboardLayout({ title, subtitle, navItems, children }) {
@@ -14,7 +14,7 @@ export function DashboardLayout({ title, subtitle, navItems, children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [dropupOpen, setDropupOpen] = useState(false)
   const [modalProfilOpen, setModalProfilOpen] = useState(false)
-  const [modalPasswordOpen, setModalPasswordOpen] = useState(false)
+  const [modalAkunOpen, setModalAkunOpen] = useState(false)
 
   const handleLogout = () => {
     logout()
@@ -98,8 +98,7 @@ export function DashboardLayout({ title, subtitle, navItems, children }) {
                 <p className="text-xs text-text-muted">{ROLE_LABELS[user?.role]}</p>
               </div>
 
-              {isMember && (
-                <button
+              <button
                   type="button"
                   onClick={() => setDropupOpen((v) => !v)}
                   className={`ml-auto shrink-0 rounded-lg p-1.5 transition ${dropupOpen
@@ -112,11 +111,10 @@ export function DashboardLayout({ title, subtitle, navItems, children }) {
                     className={`h-4 w-4 transition-transform duration-200 ${dropupOpen ? 'rotate-0' : 'rotate-180'}`}
                   />
                 </button>
-              )}
             </div>
 
             {/* Dropup menu */}
-            {isMember && dropupOpen && (
+            {dropupOpen && (
               <>
                 {/* overlay tipis untuk close saat klik luar */}
                 <button
@@ -130,21 +128,23 @@ export function DashboardLayout({ title, subtitle, navItems, children }) {
                     <p className="text-[11px] font-medium uppercase tracking-wide text-text-muted">Akun Saya</p>
                   </div>
                   <div className="border-t border-gray-100">
+                    {isMember && (
+                        <button
+                          type="button"
+                          onClick={() => { setDropupOpen(false); setModalProfilOpen(true) }}
+                          className="flex w-full items-center gap-3 px-3 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition"
+                        >
+                          <IconUserEdit className="h-4 w-4 shrink-0 text-text-muted" />
+                          Informasi Pribadi
+                        </button>
+                    )}
                     <button
                       type="button"
-                      onClick={() => { setDropupOpen(false); setModalProfilOpen(true) }}
-                      className="flex w-full items-center gap-3 px-3 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition"
-                    >
-                      <IconUserEdit className="h-4 w-4 shrink-0 text-text-muted" />
-                      Informasi Pribadi
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => { setDropupOpen(false); setModalPasswordOpen(true) }}
+                      onClick={() => { setDropupOpen(false); setModalAkunOpen(true) }}
                       className="flex w-full items-center gap-3 px-3 py-2.5 text-sm text-text-primary hover:bg-gray-50 transition"
                     >
                       <IconKey className="h-4 w-4 shrink-0 text-text-muted" />
-                      Ubah Password
+                      Pengaturan Akun
                     </button>
                   </div>
                 </div>
@@ -191,12 +191,10 @@ export function DashboardLayout({ title, subtitle, navItems, children }) {
           onSuccess={handleProfilSuccess}
         />
       )}
-      {isMember && (
-        <ModalUbahPassword
-          open={modalPasswordOpen}
-          onClose={() => setModalPasswordOpen(false)}
-        />
-      )}
+      <ModalUbahAkun
+        open={modalAkunOpen}
+        onClose={() => setModalAkunOpen(false)}
+      />
     </div>
   )
 }

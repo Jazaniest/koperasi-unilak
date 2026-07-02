@@ -8,14 +8,62 @@ import { SAVINGS_TYPE_LABELS } from '../../services/savingsService'
 import { formatCurrency, formatDate } from '../../utils/format'
 import { AdminNavbar } from '../../components/admin/AdminNavbar'
 import { useState, useEffect } from 'react'
+import { ModalSetStatus } from '../../components/admin/ModalSetStatus'
+import { ModalResetPassword } from '../../components/admin/ModalResetPassword'
+import { setMemberStatus, resetPasswordByAdmin } from '../../services/memberService'
 
 export function AdminMemberDetailPage() {
   const { id } = useParams()
   const [member, setMember] = useState(null)
 
-  useEffect(() => {
+  // State for modals
+  const [modalStatusOpen, setModalStatusOpen] = useState(false)
+  const [modalResetOpen, setModalResetOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+
+  const fetchMember = () => {
     getMemberById(id).then(setMember)
+  }
+
+  useEffect(() => {
+    fetchMember()
   }, [id])
+
+  const handleSetStatus = async () => {
+    setLoading(true)
+    setError('')
+    setSuccess('')
+    const newStatus = member.status === 'active' ? 'inactive' : 'active';
+    const result = await setMemberStatus(id, newStatus);
+    setLoading(false)
+    if(result.success) {
+        setSuccess(`Status berhasil diubah menjadi ${newStatus}`);
+        fetchMember();
+        setModalStatusOpen(false);
+    } else {
+        setError(result.error || 'Gagal mengubah status');
+    }
+  }
+
+  const handleResetPassword = async (newPassword, isValidationError) => {
+    if (isValidationError) {
+        setError('Password baru minimal 6 karakter');
+        return;
+    }
+    setLoading(true)
+    setError('')
+    setSuccess('')
+    const result = await resetPasswordByAdmin(id, newPassword);
+    setLoading(false)
+    if(result.success) {
+        setSuccess('Password berhasil direset');
+        // No need to fetch member, just show success
+    } else {
+        setError(result.error || 'Gagal mereset password');
+    }
+  }
 
   if (!member) {
     return (
@@ -29,6 +77,12 @@ export function AdminMemberDetailPage() {
 
   return (
     <DashboardLayout title={member.name} subtitle={member.memberNumber} navItems={AdminNavbar}>
+        {success && (
+            <div className="mb-4 rounded-xl bg-green-50 px-4 py-3 text-sm text-green-600">{success}</div>
+        )}
+        {error && (
+             <div className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</div>
+        )}
       <Link to="/admin/anggota" className="mb-5 inline-block ds-link">
         ← Kembali ke daftar
       </Link>
@@ -37,10 +91,6 @@ export function AdminMemberDetailPage() {
         <Card className="lg:col-span-1">
           <h3 className="font-medium text-text-primary">Profil Anggota</h3>
           <dl className="mt-5 space-y-4 text-sm">
-            <div>
-              <dt className="text-text-muted">NIK</dt>
-              <dd className="mt-0.5 font-medium text-text-primary">{member.nik}</dd>
-            </div>
             <div>
               <dt className="text-text-muted">Email</dt>
               <dd className="mt-0.5 font-medium text-text-primary">{member.email}</dd>
@@ -72,6 +122,14 @@ export function AdminMemberDetailPage() {
               </dd>
             </div>
           </dl>
+          <div className="mt-6 border-t border-gray-100 pt-5 space-y-3">
+            <Button size="sm" variant="secondary" className="w-full" onClick={() => setModalStatusOpen(true)}>
+                {member.status === 'active' ? 'Nonaktifkan Anggota' : 'Aktifkan Anggota'}
+            </Button>
+            <Button size="sm" variant="secondary" className="w-full" onClick={() => { setSuccess(''); setError(''); setModalResetOpen(true); }}>
+                Reset Password
+            </Button>
+          </div>
         </Card>
 
         <div className="space-y-6 lg:col-span-2">
@@ -140,6 +198,23 @@ export function AdminMemberDetailPage() {
           </Card>
         </div>
       </div>
+      <ModalSetStatus
+        open={modalStatusOpen}
+        onClose={() => setModalStatusOpen(false)}
+        onSubmit={handleSetStatus}
+        memberName={member.name}
+        newStatus={member.status === 'active' ? 'inactive' : 'active'}
+        loading={loading}
+      />
+      <ModalResetPassword
+        open={modalResetOpen}
+        onClose={() => setModalResetOpen(false)}
+        onSubmit={handleResetPassword}
+        memberName={member.name}
+        loading={loading}
+        error={error}
+        success={success}
+      />
     </DashboardLayout>
   )
 }
