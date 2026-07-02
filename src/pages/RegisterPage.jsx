@@ -26,7 +26,6 @@ export function RegisterPage() {
         confirmPassword: '',
         phone: '',
         // Step 2
-        nik: '',
         birthPlaceAndDate: '',
         address: '',
         occupation: '',
@@ -63,7 +62,6 @@ export function RegisterPage() {
             email: form.email.trim(),
             password: form.password,
             phone: form.phone.trim() || undefined,
-            nik: form.nik.trim() || undefined,
             birthPlaceAndDate: form.birthPlaceAndDate.trim() || undefined,
             address: form.address.trim() || undefined,
             occupation: form.occupation.trim() || undefined,
@@ -233,14 +231,6 @@ export function RegisterPage() {
                             <p className="text-xs leading-relaxed text-text-muted">
                                 Data di bawah bersifat opsional, namun membantu proses verifikasi lebih cepat.
                             </p>
-                            <Input
-                                label="NIK"
-                                type="text"
-                                value={form.nik}
-                                onChange={set('nik')}
-                                placeholder="16 digit nomor KTP"
-                                maxLength={16}
-                            />
                             <Input
                                 label="Tempat & Tanggal Lahir"
                                 type="text"

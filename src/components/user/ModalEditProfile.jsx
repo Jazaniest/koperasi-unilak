@@ -7,7 +7,6 @@ import { apiRequest } from '../../services/api'
 const FIELD_CONFIG = [
     { key: 'name', label: 'Nama Lengkap', type: 'text', source: 'user', placeholder: 'Nama lengkap Anda' },
     { key: 'phone', label: 'Nomor HP', type: 'tel', source: 'user', placeholder: 'contoh: 081234567890' },
-    { key: 'nik', label: 'NIK', type: 'text', source: 'member', placeholder: '16 digit NIK' },
     { key: 'birth_place_and_date', label: 'Tempat & Tanggal Lahir', type: 'text', source: 'member', placeholder: 'contoh: Pekanbaru, 01-01-1990' },
     { key: 'address', label: 'Alamat', type: 'textarea', source: 'member', placeholder: 'Alamat lengkap' },
     { key: 'occupation', label: 'Pekerjaan', type: 'text', source: 'member', placeholder: 'contoh: Dosen' },
@@ -34,7 +33,6 @@ export function ModalEditProfil({ open, user, onClose, onSuccess }) {
                     name: user.name ?? '',
                     phone: user.phone ?? '',
                     // dari tabel members
-                    nik: member.nik ?? '',
                     birth_place_and_date: member.birth_place_and_date ?? '',
                     address: member.address ?? '',
                     occupation: member.occupation ?? '',
@@ -62,7 +60,6 @@ export function ModalEditProfil({ open, user, onClose, onSuccess }) {
                 body: JSON.stringify({
                     name: form.name,
                     phone: form.phone,
-                    nik: form.nik,
                     birth_place_and_date: form.birth_place_and_date,
                     address: form.address,
                     occupation: form.occupation,
