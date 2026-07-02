@@ -68,6 +68,19 @@ export async function changePassword(userId, oldPassword, newPassword) {
   }
 }
 
+export async function changeEmail(newEmail, password) {
+  try {
+    await apiRequest('/auth/change-email', {
+      method: 'POST',
+      body: JSON.stringify({ newEmail, password }),
+    });
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+}
+
+
 /**
  * Update sebagian data user di session storage.
  * Dipakai setelah update profil agar nama/phone terupdate tanpa re-login.

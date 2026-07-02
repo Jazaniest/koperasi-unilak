@@ -120,3 +120,15 @@ export async function getPublicStats() {
     const res = await apiRequest('/members/public-stats')
     return res.data
 }
+
+export async function resetPasswordByAdmin(memberId, newPassword) {
+    try {
+        await apiRequest(`/members/${memberId}/reset-password`, {
+            method: 'POST',
+            body: JSON.stringify({ newPassword }),
+        });
+        return { success: true };
+    } catch (err) {
+        return { success: false, error: err.message };
+    }
+}
